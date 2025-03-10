@@ -4,15 +4,14 @@ import {
   Paper,
   TextInput,
   PasswordInput,
-  Checkbox,
   Button,
   Title,
-  Text,
-  Anchor,
+  LoadingOverlay
 } from '@mantine/core';
-import classes from '../../style/Login.module.css'
+import classes from '../../style/Login.module.css';
 
 export default function Login() {
+  const [visible, setVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -41,6 +40,7 @@ export default function Login() {
     }
 
     if (isValid) {
+      setVisible(true); // Show loading overlay
       setIsLoading(true); // Start loading
       try {
         const response = await fetch("http://localhost/api/login", {
@@ -56,10 +56,11 @@ export default function Login() {
         });
 
         const data = await response.json();
-        console.log(data);
         localStorage.setItem('token', data.token);
+
         if (response.ok) {
-          navigate("/dashboard");
+            localStorage.setItem('activeComponent', 1);
+            navigate("/dashboard");
         } else {
           if (data.errors) {
             setUsernameError(data.errors.name || "");
@@ -69,10 +70,9 @@ export default function Login() {
         }
       } catch (error) {
         console.log(`Error: ${error.message}`);
-        // Generic error message
-        setUsernameError("Kaut kas nogāja greizi, mēģiniet vēlreiz.");
       } finally {
-        setIsLoading(false); // End loading
+        setIsLoading(false);
+        setVisible(false); // Hide loading overlay
       }
     }
   };
@@ -85,8 +85,9 @@ export default function Login() {
   return (
     <div className={classes.wrapper}>
       <Paper className={classes.form} radius={0} p={30}>
+        <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         <Title order={2} className={classes.title} ta="center" mt="md" mb={50}>
-          Imants Gejs
+          VTDT Informācijas ekrānu pārvaldes sistēma
         </Title>
 
         <TextInput

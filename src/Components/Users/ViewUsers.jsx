@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import { Skeleton, Modal, Button, TextInput, PasswordInput, Text, Select, Input, Paper } from '@mantine/core';
+import React, { useEffect, useState } from "react";
+import { Skeleton, Modal, Button, TextInput, PasswordInput, Text, Select, Input, ScrollArea, Group, Table } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { IconSearch, IconEdit, IconTrashFilled } from '@tabler/icons-react';
 import classes from "../../style/SearchInput.module.css";
 import { Link } from "react-router-dom";
+import {showNotification, updateNotification} from "@mantine/notifications";
+import {IconCheck, IconX} from "@tabler/icons-react";
 
 export default function ViewUsers() {
     const [allUsers, setAllUsers] = useState([]);
@@ -28,9 +30,9 @@ export default function ViewUsers() {
         validate: {
             username: (value) => (value.length < 2 ? 'Vārds jābūt vismaz 2 simboliem' : null),
             email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Nederīgs epasts'),
-            password: (value) => (value.length > 0 && value.length < 6 ? 'Parolei jābūt vismaz 6 simboliem' : null),
+            password: (value) => (value && value.length > 0 && value.length < 6 ? 'Parolei jābūt vismaz 6 simboliem' : null),
             confirmPassword: (value, values) =>
-                value !== values.password ? 'Paroles nesakrīt' : null,
+                value && value !== values.password ? 'Paroles nesakrīt' : null,
         },
         validateInputOnChange: true,
     });
@@ -48,6 +50,14 @@ export default function ViewUsers() {
             });
 
             if (!response.ok) {
+                showNotification({
+                    id: "fetching",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda atlasot lietotāju.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Tīkla vai iekšēja servera kļūda');
             }
@@ -55,6 +65,14 @@ export default function ViewUsers() {
             const data = await response.json();
             setAllUsers(data.users || []);
         } catch (error) {
+            showNotification({
+                id: "fetching",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda atlasot lietotāju.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error fetching users:', error);
             setAllUsers([]); 
         } finally {
@@ -69,6 +87,12 @@ export default function ViewUsers() {
         setAllUsers(newUsersList);
 
         try {
+            showNotification({
+                id: 'deleting',
+                autoClose: false,
+                title: "Veic lietotāja dzēšanu...",
+                loading: true
+            });
             const response = await fetch('http://localhost/api/deleteUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -76,14 +100,37 @@ export default function ViewUsers() {
             });
 
             if (!response.ok) {
+                updateNotification({
+                    id: "deleting",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda dzēšot lietotāju.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
                 throw new Error('Tīkla vai iekšēja servera kļūda');
             }
-
             const data = await response.json();
             setAllUsers(data.users || []);
             setUserToDelete(null);
             closeDeleteModal();
+            updateNotification({
+                id: "deleting",
+                color: 'teal',
+                autoClose: true,
+                title: "Lietotājs izdzēsts veiksmīgi!",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
         } catch (error) {
+            updateNotification({
+                id: "deleting",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda dzēšot lietotāju.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error deleting user:', error);
             setAllUsers(prevUsers => [...prevUsers, userToDelete]);
         }
@@ -91,31 +138,72 @@ export default function ViewUsers() {
 
     const handleEdit = async (values) => {
         if (!userToEdit) return;
-    
+
         try {
+            showNotification({
+                id: 'saving',
+                autoClose: false,
+                title: "Veic lietotāja saglabāšanu...",
+                loading: true
+            });
+            const requestData = {
+                id: userToEdit.id,
+                name: values.username,
+                email: values.email,
+                role: values.role,
+            };
+
+            if (values.password) {
+                requestData.password = values.password;
+            }
+
             const response = await fetch('http://localhost/api/editUser', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ 
-                    id: userToEdit.id,
-                    name: values.username,
-                    email: values.email,
-                    role: values.role,
-                    password: values.password || null,
-                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(requestData), // ✅ Ensure JSON formatting
             });
-    
-            if (!response.ok) {
-                throw new Error('Tīkla vai iekšēja servera kļūda');
-            }
-    
+
             const data = await response.json();
-            setAllUsers(data.users || []); 
+
+            if (!response.ok) {
+                updateNotification({
+                    id: "saving",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda saglabājot izmaiņas.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
+                console.error('Validation errors:', data.errors);
+                throw new Error(data.message || 'Tīkla vai iekšēja servera kļūda');
+            }
+            updateNotification({
+                id: "saving",
+                color: 'teal',
+                autoClose: true,
+                title: "Lietotājs veiksmīgi autjaunināts.",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
+            setAllUsers(data.users || []);
             setUserToEdit(null);
             handleCloseEditModal();
         } catch (error) {
+            updateNotification({
+                id: "saving",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda saglabājot lietotāju.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error editing user:', error);
         }
+
     };
 
     const filteredUsers = allUsers.filter(user =>
@@ -131,9 +219,7 @@ export default function ViewUsers() {
         setUserToEdit(user);
         form.setValues({ 
             username: user.name, 
-            email: user.email, 
-            password: '', 
-            confirmPassword: '',
+            email: user.email,
             role: user.role, 
         });
         form.validate();
@@ -152,51 +238,73 @@ export default function ViewUsers() {
     };
 
     useEffect(() => {
-        const isValid = Object.values(form.errors).every(error => !error) && Object.values(form.values).every(value => value !== '');
+        const isValid =
+            Object.values(form.errors).every(error => !error) &&
+            Object.entries(form.values).every(([key, value]) => {
+                if (key === "password" || key === "confirmPassword") {
+                    return true; 
+                }
+                return value !== "";
+            });
+
         setIsFormValid(isValid);
     }, [form.values, form.errors]);
+
 
     return (
         <div className="view-user-content">
             <div className="search-bar">
                 <Input 
-                placeholder="Lietotāja lietotājvārds..."
-                variant="filled"
-                classNames={{wrapper: classes.maxWidth}} 
-                leftSection={<IconSearch size={18}/>} 
-                size='md' 
-                onChange={(e) => setSearchTerm(e.currentTarget.value)}
-                >                  
-                </Input>
-                <Link to="/dashboard/createUser"><Button  size='md' >Pievienot lietotāju</Button></Link>
+                    placeholder="Lietotāja lietotājvārds..."
+                    variant="filled"
+                    classNames={{ wrapper: classes.maxWidth }} 
+                    leftSection={<IconSearch size={18} />} 
+                    size='md' 
+                    onChange={(e) => setSearchTerm(e.currentTarget.value)}
+                />
+                <Link to="/dashboard/createUser">
+                    <Button size='md'>Pievienot lietotāju</Button>
+                </Link>
             </div>
 
             {loading ? (
                 <div className="user-links">
                     {[...Array(10)].map((_, index) => (
-                        <Skeleton key={index} radius="md" height="65px" width="49%" />
+                        <Skeleton key={index} radius="md" height="65px" width="100%" />
                     ))}
                 </div>
             ) : filteredUsers.length > 0 ? (
-                <div className="user-links">
-                    {filteredUsers.map((user) => (
-                        <div key={user.id} className="single-user">
-                            <span className="user-username">{user.name}</span>
-                            <span className="role-wrapper">
-                                <span className="role-prefix">Pieejas līmenis</span>
-                                <span className="role-title">{user.role}</span>
-                            </span>
-                            <div className="quick-user-actions">
-                                <Button onClick={() => handleEditButtonClick(user)} w={45} h={45} p={10}>
-                                    <IconEdit></IconEdit>
-                                </Button>
-                                <Button  color="red" onClick={() => handleDeleteButtonClick(user)} w={45} h={45} p={10}>
-                                    <IconTrashFilled></IconTrashFilled>
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <ScrollArea style={{ height: '300px' }}>
+                    <Table miw={700}>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th ta="center">Lietotājvārds</Table.Th>
+                                <Table.Th ta="center">E-pasts</Table.Th>
+                                <Table.Th ta="center">Pieejas līmenis</Table.Th>
+                                <Table.Th ta="center"></Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {filteredUsers.map((user) => (
+                                <Table.Tr key={user.id}>
+                                    <Table.Td ta="center">{user.name}</Table.Td>
+                                    <Table.Td ta="center">{user.email}</Table.Td>
+                                    <Table.Td ta="center">{user.role}</Table.Td>
+                                    <Table.Td>
+                                        <Group justify="center">
+                                            <Button onClick={() => handleEditButtonClick(user)} variant="filled" size="xs" title="Rediģēt">
+                                                <IconEdit size={16} />
+                                            </Button>
+                                            <Button color="red" onClick={() => handleDeleteButtonClick(user)} variant="filled" size="xs" title="Dzēst">
+                                                <IconTrashFilled size={16} />
+                                            </Button>
+                                        </Group>
+                                    </Table.Td>
+                                </Table.Tr>
+                            ))}
+                        </Table.Tbody>
+                    </Table>
+                </ScrollArea>
             ) : (
                 <Text className="screen-search-error">Nevar atrast šādu ekrānu.</Text>
             )}
@@ -218,48 +326,47 @@ export default function ViewUsers() {
             </Modal>
 
             <Modal 
-            opened={editModalOpened} 
-            onClose={handleCloseEditModal} 
-            title="Rediģēt lietotāju"
-            overlayProps={{
-                backgroundOpacity: 0.55,
-                blur: 3,
-            }} 
-            centered>
+                opened={editModalOpened} 
+                onClose={handleCloseEditModal} 
+                title="Rediģēt lietotāju"
+                overlayProps={{
+                    backgroundOpacity: 0.55,
+                    blur: 3,
+                }} 
+                centered>
                 <form onSubmit={form.onSubmit(handleEdit)}>
                     <TextInput
-                        label="Vārds"
+                        label="Lietotājvārds"
                         placeholder="Ievadiet lietotāja vārdu"
                         {...form.getInputProps('username')}
                     />
                     <TextInput
                         label="Epasts"
-                        placeholder="Ievadiet lietotāja e-pastu"
+                        placeholder="Ievadiet lietotāja epastu"
                         {...form.getInputProps('email')}
                     />
+                    <Select
+                        label="Loma"
+                        placeholder="Izvēlieties lomu"
+                        {...form.getInputProps('role')}
+                        data={[
+                            { value: 'Administrātors', label: 'Administrātors' },
+                            { value: 'Lietotājs', label: 'Lietotājs' },
+                        ]}
+                    />
                     <PasswordInput
-                        label="Parole"
-                        placeholder="Ievadiet jauno paroli"
+                        label="Jauna parole"
+                        placeholder="Ievadiet jaunu paroli (ja nepieciešams)"
                         {...form.getInputProps('password')}
                     />
                     <PasswordInput
-                        label="Apstiprināt paroli"
+                        label="Apstipriniet paroli"
                         placeholder="Apstipriniet paroli"
                         {...form.getInputProps('confirmPassword')}
                     />
-                    <Select
-                        label="Pieejas līmenis"
-                        placeholder="Izvēlēties lomu"
-                        {...form.getInputProps('role')}
-                        data={[
-                            { value: 'Administrators', label: 'Administrators' },
-                            { value: 'Lietotājs', label: 'Lietotājs' },
-                            { value: 'Skatītājs', label: 'Skatītājs' },
-                        ]}
-                    />
                     <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-                        <Button type="submit" disabled={!isFormValid}>Saglabāt izmaiņas</Button>
-                        <Button variant="outline" onClick={handleCloseEditModal}>Atcelt</Button>
+                        <Button type="submit" color="blue" disabled={!isFormValid}>Saglabāt</Button>
+                        <Button variant="outline" onClick={handleCloseEditModal} color="dark">Atcelt</Button>
                     </div>
                 </form>
             </Modal>

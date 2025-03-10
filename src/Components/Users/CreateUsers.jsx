@@ -1,24 +1,26 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import MantineInput from "../Mantine/MantineInput";
 import { Button } from "@mantine/core";
 import dropdown from "../../style/ContainedInput.module.css";
-import { Select } from "@mantine/core";
+import { Select, LoadingOverlay } from "@mantine/core";
+import {showNotification, updateNotification} from "@mantine/notifications";
+import {IconCheck, IconX} from "@tabler/icons-react";
 
 export default function CreateUsers() {
   const token = localStorage.getItem('token');
   const [createdUser, setCreatedUser] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(""); // New state for role
+  const [role, setRole] = useState("");
 
   const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [roleError, setRoleError] = useState(""); // New error state for role
+  const [roleError, setRoleError] = useState(""); 
 
-  // Real-time validation for username
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setUsername(value);
@@ -29,7 +31,6 @@ export default function CreateUsers() {
     }
   };
 
-  // Real-time validation for email
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
@@ -42,7 +43,6 @@ export default function CreateUsers() {
     }
   };
 
-  // Real-time validation for password
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -55,7 +55,6 @@ export default function CreateUsers() {
     }
   };
 
-  // Real-time validation for role
   const handleRoleChange = (value) => {
     setRole(value);
     if (value.trim() === "") {
@@ -68,13 +67,19 @@ export default function CreateUsers() {
   const submitForm = async () => {
     let isValid = true;
 
-    // Checking if any field has an error before submission
     if (usernameError || emailError || passwordError || roleError) {
       isValid = false;
     }
 
     if (isValid) {
+      setVisible(true); 
       try {
+          showNotification({
+              id: 'saving',
+              autoClose: false,
+              title: "Veic lietotāja izveidi...",
+              loading: true
+          });
         const response = await fetch("http://localhost/api/createUser", {
           method: 'POST',
           headers: {
@@ -90,10 +95,29 @@ export default function CreateUsers() {
           }),
         });
         const data = await response.json();
-
+        setVisible(false);
         if (response.ok) {
+            updateNotification({
+                id: "saving",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda izveidojot lietotāju.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
           console.log(data);
           setCreatedUser(true);
+            updateNotification({
+                id: "saving",
+                color: 'teal',
+                autoClose: true,
+                title: "Lietotājs izveidots veiksmīgi!",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
+          setEmail("")
+          setUsername("")
+          setPassword("")
         } else {
           if (data.errors) {
             setCreatedUser(false);
@@ -102,9 +126,25 @@ export default function CreateUsers() {
             setPasswordError(data.errors.password || '');
             setRoleError(data.errors.role || ''); 
           }
+            updateNotification({
+                id: "saving",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda izveidojot lietotāju.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
           throw new Error(data.message || 'Neizdevās izveidot lietotāju');
         }
       } catch (error) {
+          updateNotification({
+              id: "saving",
+              color: 'red',
+              autoClose: false,
+              title: "Radās kļūda izveidojot lietotāju.",
+              loading: false,
+              icon: <IconX size={18} />
+          });
         console.log(`Error: ${error.message}`);
       }
     }
@@ -119,6 +159,7 @@ export default function CreateUsers() {
     <div className="create-user-content">
       Izveidot lietotāju
       <form className="create-container" onSubmit={handleSubmit}>
+      <LoadingOverlay visible={visible} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
         <span>
           <MantineInput
             label="Lietotājvārds"
@@ -162,9 +203,6 @@ export default function CreateUsers() {
         </span>
         <span className="flex-column align-center">
           <Button size="md" type="submit">Izveidot lietotāju</Button>
-          <p className={`user-success ${createdUser ? 'opacity-1' : ''}`}>
-            Lietotājs pievienots veiksmīgi
-          </p>
         </span>
       </form>
     </div>

@@ -1,6 +1,6 @@
 
 import ViewFolderContent from "../Components/Folders/ViewFolderContent";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 
 export default function FolderContent() {
 

@@ -1,5 +1,5 @@
 import { Stack, MultiSelect, Checkbox, Group, Button } from "@mantine/core";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DateTimePicker } from "@mantine/dates";
 import { useDispatch, useSelector } from "react-redux";
 import { updateStartDate } from "../../actions/startDateAction";
@@ -7,8 +7,11 @@ import { updateEndDate } from "../../actions/endDateAction";
 import { updateSlideshowScreens } from "../../actions/slideshowScreenActions";
 import '@mantine/dates/styles.css';
 import dateStyle from "../../style/DateModal.module.css";
+import { updateBgColor, updateImageDescription, updateImageLink, updateTextColor, updateTextPosition } from "../../actions/imageActions";
+import {showNotification, updateNotification} from "@mantine/notifications";
+import {IconCheck, IconX} from "@tabler/icons-react";
 
-export default function SlideshowModal() {
+export default function SlideshowModal({closeContinue}) {
     const [screens, setScreens] = useState([]); // Holds screen options for MultiSelect
     const [selectedScreens, setSelectedScreens] = useState([]); // Selected screens state
     const [startDate, setStartDate] = useState(null);
@@ -17,43 +20,36 @@ export default function SlideshowModal() {
     const token = localStorage.getItem('token');
     const dispatch = useDispatch();
     
-    // Retrieve values from Redux state
-    const reduxSelectedScreens = useSelector((state) => state.screens.screens || []); // Default to empty array
-    const reduxStartDate = useSelector((state) => state.startDate.startDate || null); // Default to null
-    const reduxEndDate = useSelector((state) => state.endDate.endDate || null); // Default to null
+    const reduxSelectedScreens = useSelector((state) => state.screens.screens || []); 
+    const reduxStartDate = useSelector((state) => state.startDate.startDate || null);
+    const reduxEndDate = useSelector((state) => state.endDate.endDate || null); 
     const slideData = useSelector((state) => state.imageLinks)
 
-    // Fetch screens data when the component mounts
     useEffect(() => {
         fetchScreens();
     }, []);
 
-    // Set the selected screens from Redux state when component mounts
     useEffect(() => {
-        if (reduxSelectedScreens.length > 0) { // Only set if redux state has data
-            setSelectedScreens(reduxSelectedScreens); // Set selected screens from Redux
+        if (reduxSelectedScreens.length > 0) { 
+            setSelectedScreens(reduxSelectedScreens); 
         }
-    }, [reduxSelectedScreens]); // Run this effect whenever reduxSelectedScreens changes
+    }, [reduxSelectedScreens]); 
 
-    // Set initial dates from Redux state when component mounts
     useEffect(() => {
         if (reduxStartDate) {
-            setStartDate(new Date(reduxStartDate)); // Set start date from Redux
+            setStartDate(new Date(reduxStartDate)); 
         }
         if (reduxEndDate) {
-            setEndDate(new Date(reduxEndDate)); // Set end date from Redux
+            setEndDate(new Date(reduxEndDate)); 
         }
-    }, [reduxStartDate, reduxEndDate]); // Run this effect when reduxStartDate or reduxEndDate changes
+    }, [reduxStartDate, reduxEndDate]); 
 
-    // Dispatch selected screens to Redux whenever they change
     useEffect(() => {
         dispatch(updateSlideshowScreens(selectedScreens));
     }, [selectedScreens, dispatch]);
 
-    // Dispatch start date to Redux whenever it changes
     useEffect(() => {
         dispatch(updateStartDate(startDate));
-        // Validate the date inputs
         if (startDate && endDate && endDate <= startDate) {
             setStartDateError("Sākuma datumam jābūt pirms beigu datumam");
         } else {
@@ -61,12 +57,10 @@ export default function SlideshowModal() {
         }
     }, [startDate, endDate, dispatch]);
 
-    // Dispatch end date to Redux whenever it changes
     useEffect(() => {
         dispatch(updateEndDate(endDate));
     }, [endDate, dispatch]);
 
-    // Fetch screen data from the API
     const fetchScreens = async () => {
         try {
             const response = await fetch('http://localhost/api/getAllScreens', {
@@ -74,38 +68,50 @@ export default function SlideshowModal() {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!response.ok) {
+                showNotification({
+                    id: "fetching",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda atlasot ekrānus.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
 
             const transformedData = data
                 .map(screen => ({
-                    value: String(screen.id), // Convert id to string
-                    label: screen.table_name // table_name as label
+                    value: String(screen.id), 
+                    label: screen.table_name 
                 }))
-                .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by label
+                .sort((a, b) => a.label.localeCompare(b.label)); 
 
-            setScreens(transformedData); // Set the fetched screens in local state
+            setScreens(transformedData);
         } catch (error) {
+            showNotification({
+                id: "fetching",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda atlasot failus.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error fetching screens:', error);
         }
     };
 
-    // Handle changes in the MultiSelect
     const handleMultiSelectChange = (values) => {
         setSelectedScreens(values);
     };
 
-    // Handle the "Select All" checkbox
     const handleSelectAllChange = (event) => {
         if (event.currentTarget.checked) {
-            setSelectedScreens(screens.map(screen => screen.value)); // Select all
+            setSelectedScreens(screens.map(screen => screen.value)); 
         } else {
-            setSelectedScreens([]); // Deselect all
+            setSelectedScreens([]); 
         }
     };
-
-    // Function to append reduxStartDate, reduxEndDate, and reduxSelectedScreens to each imageLink
     const prepareDataForPost = () => {
         const combinedData = slideData.map(imageLink => ({
             ...imageLink,
@@ -118,11 +124,16 @@ export default function SlideshowModal() {
         return combinedData;
     };
 
-    // Post data to the API and log the response
     const postDataToApi = async () => {
         const dataToPost = prepareDataForPost();
 
         try {
+            showNotification({
+                id: 'uploading',
+                autoClose: false,
+                title: "Saglabā slaidrādi...",
+                loading: true
+            });
             const response = await fetch('http://localhost/api/saveSlides', {
                 method: 'POST',
                 headers: {
@@ -133,18 +144,55 @@ export default function SlideshowModal() {
             });
 
             if (!response.ok) {
+                updateNotification({
+                    id: "uploading",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda saglabāhot slaidrādi.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
                 throw new Error('Failed to post data');
             }
-
+            updateNotification({
+                id: "uploading",
+                color: 'teal',
+                autoClose: true,
+                title: "Slaidrāde saglabāta veiksmīgi!",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
             const responseData = await response.json();
-            console.log('API response:', responseData);
+            if(responseData.message === "Slides created successfully"){
+                closeContinue()
+                dispatch(updateEndDate(''));
+                dispatch(updateStartDate(''));
+                dispatch(updateSlideshowScreens(''))
+                dispatch(updateTextPosition('middle-center'))
+                dispatch(updateTextColor('rgba(255, 255, 255, 1)'))
+                dispatch(updateBgColor('rgba(40,34,98,1)'))
+                dispatch(updateImageDescription(''))
+                dispatch(updateImageLink(''))
+                dispatch(updateSlideshowScreens([]))
+                setStartDate('')
+                setEndDate('')
+                setSelectedScreens([])
+            }
+            console.log(responseData);
 
         } catch (error) {
+            updateNotification({
+                id: "uploading",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda saglabājot slaidrādi.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error posting data:', error);
         }
     };
 
-    // Determine if the button should be disabled
     const isButtonDisabled = !startDate || !endDate || selectedScreens.length === 0 || !!startDateError;
 
     return (
@@ -154,7 +202,7 @@ export default function SlideshowModal() {
                 required
                 label="Izvēlies ekrānus"
                 placeholder="Izvēlies ekrānu"
-                data={screens} // Use local screens state here
+                data={screens}
                 searchable
                 clearable
                 nothingFoundMessage="Tāda ekrāna nav"
@@ -165,13 +213,14 @@ export default function SlideshowModal() {
             <Checkbox
                 label="Izvēlēties visus ekrānus"
                 variant="outline"
-                checked={selectedScreens.length === screens.length} // Check if all are selected
-                onChange={handleSelectAllChange} // Use the new handler
+                checked={selectedScreens.length === screens.length} 
+                onChange={handleSelectAllChange} 
             />
             <Group justify="space-between">
                 <DateTimePicker
                     clearable
                     required
+                    locale="lv"
                     classNames={{ root: dateStyle.dateWidth, label: dateStyle.textLeft }}
                     minDate={new Date()}
                     value={startDate}
@@ -179,20 +228,22 @@ export default function SlideshowModal() {
                     label="Sākuma datums"
                     placeholder="Izvēlies sākuma datumu"
                     variant="filled"
-                    error={startDateError} // Show error message
+                    highlightToday
+                    error={startDateError} 
                 />
 
                 <DateTimePicker
                     clearable
                     required
                     classNames={{ root: dateStyle.dateWidth, label: dateStyle.textRight }}
-                    minDate={startDate} // Ensure end date cannot be before start date
+                    minDate={startDate} 
                     value={endDate}
                     onChange={setEndDate}
                     label="Beigu datums"
                     placeholder="Izvēlies beigu datumu"
                     variant="filled"
                     disabled={!startDate}
+
                 />
             </Group>
             <Button disabled={isButtonDisabled} onClick={() => postDataToApi()}>

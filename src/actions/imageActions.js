@@ -1,12 +1,10 @@
-// Action types
 export const SET_BUTTONS_DATA = 'SET_BUTTONS_DATA';
 export const UPDATE_IMAGE_LINK = 'UPDATE_IMAGE_LINK';
 export const UPDATE_IMAGE_DESCRIPTION = 'UPDATE_IMAGE_DESCRIPTION';
-export const UPDATE_TEXT_COLOR = 'UPDATE_TEXT_COLOR'; // New action type for text color
-export const UPDATE_BG_COLOR = 'UPDATE_BG_COLOR'; // New action type for background color
-export const UPDATE_TEXT_POSITION = 'UPDATE_TEXT_POSITION'; // New action type for text position
+export const UPDATE_TEXT_COLOR = 'UPDATE_TEXT_COLOR'; 
+export const UPDATE_BG_COLOR = 'UPDATE_BG_COLOR'; 
+export const UPDATE_TEXT_POSITION = 'UPDATE_TEXT_POSITION';
 
-// Action creators
 export const setButtonsData = (buttonsData) => ({
   type: SET_BUTTONS_DATA,
   payload: buttonsData,
@@ -24,14 +22,14 @@ export const updateImageDescription = (id, description) => ({
 
 export const updateTextColor = (id, textColor) => ({
   type: UPDATE_TEXT_COLOR,
-  payload: { id, textColor }, // Pass the ID and new text color
+  payload: { id, textColor },
 });
 
 export const updateBgColor = (id, bgColor) => ({
   type: UPDATE_BG_COLOR,
-  payload: { id, bgColor }, // Pass the ID and new background color
+  payload: { id, bgColor }, 
 });
 export const updateTextPosition = (id, textPosition) => ({
   type: UPDATE_TEXT_POSITION,
-  payload: { id, textPosition }, // Pass the ID and new text position
+  payload: { id, textPosition }, 
 });

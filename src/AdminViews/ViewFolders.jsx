@@ -1,6 +1,6 @@
 
 import ViewFiles from "../Components/Folders/ViewAllFolders";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 export default function View() {
   return (
     <Layout>

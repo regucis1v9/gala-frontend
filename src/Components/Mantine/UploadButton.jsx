@@ -36,10 +36,9 @@ export default function UploadButton({ onUpload }) {
       fullWidth
       className={classes.button}
       onClick={handleClick}
-      color={loaded ? 'teal' : theme.primaryColor}
     >
       <div className={classes.label}>
-        {progress !== 0 ? 'Augšupielādē failus' : loaded ? 'Faili augšupielādēti' : 'Augšupielādēt failus'}
+        Augšupielādē failus
       </div>
       {progress > 0 && <Progress value={progress} />}
     </Button>

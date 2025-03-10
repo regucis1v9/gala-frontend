@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateActiveComponent } from '../../actions/componentAction';
 import { Button, Input, Text } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import {IconCheck, IconSearch, IconX} from '@tabler/icons-react';
 import classes from "../../style/SearchInput.module.css"
+import {showNotification, updateNotification} from "@mantine/notifications";
 
 export default function ViewFolderContent() {
   const { folderName } = useParams();
@@ -16,34 +17,42 @@ export default function ViewFolderContent() {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const token = localStorage.getItem('token');
   const dispatch = useDispatch();
+  
 
   useEffect(() => {
     dispatch(updateActiveComponent('view'));
   }, [dispatch]);
 
-  const fetchFiles = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost/api/retrieveFiles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ folder_name: folderName }),
-      });
+    const fetchFiles = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`http://localhost/api/retrieveFiles`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization':`Bearer ${token}`
+                },
+                body: JSON.stringify({ folder_name: folderName }),
+                credentials: 'include',  // Ensure cookies are included in the request
+            });
 
-      if (!response.ok) {
-        throw new Error('Error finding files');
-      }
+            if (!response.ok) {
+                throw new Error('Error finding files');
+            }
 
-      const data = await response.json();
-      setFiles(data.files || []);
-    } catch (error) {
-      console.error('Fetch error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+            const data = await response.json();
+            setFiles(data.files || []);
+        } catch (error) {
+            console.error('Fetch error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  useEffect(() => {
+
+
+    useEffect(() => {
     fetchFiles();
   }, [folderName]);
 
@@ -67,36 +76,85 @@ export default function ViewFolderContent() {
     }
   };
 
-  const deleteFiles = async () => {
-    try {
-      const response = await fetch('http://localhost/api/deleteFiles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({
-          folder_name: folderName,
-          files: imagesToDelete,
-        }),
-      });
+    const deleteFiles = async () => {
+        try {
+            showNotification({
+                id: 'deleting',
+                autoClose: false,
+                title: "Dzēš failus...",
+                loading: true
+            });
+            const response = await fetch('http://localhost/api/deleteFiles', { // Fixed typo in URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    folder_name: folderName,
+                    files: imagesToDelete,
+                }),
+            });
 
-      if (!response.ok) {
-        throw new Error('Error deleting files');
-      }
+            if (!response.ok) {
+                let errorMessage = "Nezināma kļūda. Ja tā turpinās, sazināties ar skolas IT speciālistu.";
 
-      // Update the state to remove deleted files
-      setFiles((prevFiles) =>
-        prevFiles.filter(file => !imagesToDelete.includes(extractFileName(file)))
-      );
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (jsonError) {
+                    if (response.status === 404) {
+                        errorMessage = "Lapa nav atrasta. Pārbaudiet API adresi.";
+                    } else if (response.status === 500) {
+                        errorMessage = "Servera kļūda. Mēģiniet vēlreiz vēlāk.";
+                    }
+                }
 
-      alert('Files deleted successfully!');
-    } catch (error) {
-      alert('Error deleting files: ' + error.message);
-    } finally {
-      setDeleteImages(false);
-      setImagesToDelete([]);
-    }
-  };
+                updateNotification({
+                    id: "deleting",
+                    color: 'red',
+                    autoClose: true,
+                    title: "Neizdevās dzēst failus.",
+                    message: errorMessage,
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
 
-  const handleRedButton = () => {
+                return;
+            }
+
+            updateNotification({
+                id: "deleting",
+                color: 'teal',
+                autoClose: true,
+                title: "Dzēšana veiksmīga!",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
+
+            setFiles((prevFiles) =>
+                prevFiles.filter(file => !imagesToDelete.includes(extractFileName(file)))
+            );
+        } catch (error) {
+            updateNotification({
+                id: 'deleting',
+                color: 'red',
+                autoClose: false,
+                title: "Tīkla kļūda",
+                message: "Nevar izveidot savienojumu ar serveri. Pārbaudiet interneta savienojumu vai mēģiniet vēlreiz.",
+                icon: <IconX size={18} />
+            });
+        } finally {
+            setDeleteImages(false);
+            setImagesToDelete([]);
+        }
+    };
+
+
+    const handleRedButton = () => {
     if (deleteImages) {
       if (imagesToDelete.length > 0) {
         deleteFiles();
@@ -130,7 +188,15 @@ export default function ViewFolderContent() {
   return (
     <div className="content-main">
       <div className="search-bar">
-        <Input classNames={{ wrapper: classes.maxWidth }} leftSection={<IconSearch size={18} />} size='md'></Input>
+      <Input 
+        placeholder='Attēla nosakums...'
+        classNames={{ wrapper: classes.maxWidth }} 
+        leftSection={<IconSearch size={18} />} 
+        size='md' 
+        variant="filled"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.currentTarget.value)}
+        />
         <Button onClick={handleRedButton} size='md'>
           {deleteImages 
             ? (imagesToDelete.length > 0 ? "Apstiprināt dzēšanu" : "Atcelt dzēšanu") 
@@ -151,7 +217,7 @@ export default function ViewFolderContent() {
           ))}
         </div>
       ) : (
-        <div className='search-error'>{searchTerm ? "Nevar atrast failu ar tādu nosaukumu" : "Šī mape ir tukša"}</div>
+        <div className='screen-search-error'>{searchTerm ? "Nevar atrast failu ar tādu nosaukumu" : "Šī mape ir tukša"}</div>
       )}
 
       {selectedImage && !deleteImages && (

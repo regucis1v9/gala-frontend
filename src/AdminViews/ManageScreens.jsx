@@ -1,6 +1,6 @@
 
 import ViewAllScreens from "../Components/ScreenManagement/ViewAllScreens";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 
 export default function Manage() {
   return (

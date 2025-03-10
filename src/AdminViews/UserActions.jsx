@@ -1,5 +1,5 @@
 import UserActions from "../Components/Users/UserActions";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 export default function Users() {
     return (
         

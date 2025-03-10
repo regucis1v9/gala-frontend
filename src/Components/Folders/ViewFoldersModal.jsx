@@ -71,16 +71,16 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
     closeModal();
   };
 
-  const filteredFolders = folders.filter(folder => 
-    folder.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const filteredFolders = folders.filter(folder =>
+        folder.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <div className="manage-main">
       {selectedFolder ? (
         <div>
           <Button ml={20} onClick={() => setSelectedFolder(null)}>Atpakaļ</Button>
-          <Text ta="left" ml={20} mt={20} fz={32} fw={600} color={isDarkMode ? "white" : "black"}>{selectedFolder}</Text>
+          <Text ta="left" ml={20} mt={20} fz={32} fw={600} color={isDarkMode ? "white" : "black"}>{selectedFolder.name}</Text>
           {isLoadingFiles ? (
             <div className="folder-main">
               <Skeleton w={100} h={100}></Skeleton>
@@ -108,45 +108,47 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
           )}
         </div>
       ) : (
-        <>
-          <div className="search-bar">
-            <Input 
-              placeholder='Meklēt mapes...'
-              classNames={{ wrapper: classes.maxWidth }} 
-              leftSection={<IconSearch />} 
-              size='md' 
-              variant="filled"
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.currentTarget.value)} 
-            />
-          </div>
-          <div className="folder-main">
-            {isLoadingFolders ? (
-              <>
-                <Skeleton w={100} h={100}></Skeleton>
-                <Skeleton w={100} h={100}></Skeleton>
-                <Skeleton w={100} h={100}></Skeleton>
-                <Skeleton w={100} h={100}></Skeleton>
-                <Skeleton w={100} h={100}></Skeleton>
-              </>
-            ) : (
-              filteredFolders.map((folder, index) => (
-                <button 
-                  key={index} 
-                  className="screen-button" 
-                  onClick={() => handleFolderClick(folder)} 
-                >
-                  <div title={folder}>
-                    <div className="folder-icon">
-                      <IconFolderFilled size={60} color={isDarkMode ? theme.colors.blue[8] : theme.colors.blue[6]} />
-                    </div>
-                    <Text w={70} ta="center" color={isDarkMode ? "white" : "black"}>{folder}</Text>
-                  </div>
-                </button>
-              ))
-            )}
-          </div>
-        </>
+          <>
+              <div className="search-bar">
+                  <Input
+                      placeholder='Meklēt mapes...'
+                      classNames={{wrapper: classes.maxWidth}}
+                      leftSection={<IconSearch/>}
+                      size='md'
+                      variant="filled"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.currentTarget.value)}
+                  />
+              </div>
+              <div className="folder-main">
+                  {isLoadingFolders ? (
+                      <>
+                          <Skeleton w={100} h={100}></Skeleton>
+                          <Skeleton w={100} h={100}></Skeleton>
+                          <Skeleton w={100} h={100}></Skeleton>
+                          <Skeleton w={100} h={100}></Skeleton>
+                          <Skeleton w={100} h={100}></Skeleton>
+                      </>
+                  ) : (
+                      filteredFolders.map((folder, index) => (
+                          <button
+                              key={index}
+                              className="screen-button"
+                              onClick={() => handleFolderClick(folder.name)}
+                          >
+                              <div title={folder.name}> {/* Use folder.name here */}
+                                  <div className="folder-icon">
+                                      <IconFolderFilled size={60}
+                                                        color={isDarkMode ? theme.colors.blue[8] : theme.colors.blue[6]}/>
+                                  </div>
+                                  <Text w={70} ta="center"
+                                        color={isDarkMode ? "white" : "black"}>{folder.name}</Text> {/* Use folder.name here */}
+                              </div>
+                          </button>
+                      ))
+                  )}
+              </div>
+          </>
       )}
     </div>
   );

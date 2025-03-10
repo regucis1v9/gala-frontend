@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateActiveComponent } from '../../actions/componentAction';
-import { Select } from '@mantine/core';
+import { Select, ActionIcon, Button } from '@mantine/core';
 import UploadButton from '../Mantine/UploadButton';
 import DropzoneArea from '../Mantine/Dropzone';
+import { showNotification, updateNotification } from '@mantine/notifications';
+import { IconX, IconCheck } from '@tabler/icons-react';
 import dropdown from '../../style/ContainedInput.module.css';
-
 export default function UploadFiles() {
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState('');
   const [files, setFiles] = useState([]); // State to hold uploaded files
   const [previews, setPreviews] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
 
@@ -44,17 +46,32 @@ export default function UploadFiles() {
     setSelectedFolder(value);
   };
 
-  const handleImageClick = (preview) => {
+  const handleImageClick = (preview, index) => {
     setSelectedImage(preview);
+    setSelectedIndex(index)
   };
 
   const handleCloseModal = () => {
     setSelectedImage(null);
   };
+    const handleRemoveImage = () => {
+        if (selectedIndex === null) return;
+
+        setFiles((prevFiles) => prevFiles.filter((_, index) => index !== selectedIndex));
+        setPreviews((prevPreviews) => prevPreviews.filter((_, index) => index !== selectedIndex));
+        setSelectedImage(null);
+        setSelectedIndex(null);
+    };
 
   const handleFileUpload = async () => {
     if (!selectedFolder || files.length === 0) {
-      alert('Pirms augšupielādēšanas ir jāizvēlas mape un faili.');
+        showNotification({
+            color:"red",
+            autoClose: true,
+            title: "Jāizvēlas vismaz viens fails!",
+            icon: <IconX size={18}/>
+        });
+
       return;
     }
 
@@ -68,23 +85,43 @@ export default function UploadFiles() {
     });
 
     try {
+        showNotification({
+            id:"uploading-file",
+            autoClose: false,
+            title: "Augšupielādē failus...",
+            loading: true
+        });
       const response = await fetch('http://localhost/api/uploadFiles', {
         method: 'POST',
         body: formData,
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (!response.ok) {
+          updateNotification({
+              id:"uploading-file",
+              color:'red',
+              autoClose: true,
+              title: "Augšupielāde neizdevās.",
+              loading: false,
+              icon: <IconX size={18}/>
+          });
         throw new Error('File upload failed');
       }
 
       const data = await response.json();
       console.log('Upload successful:', data);
-      alert('Faili veiksmīgi augšupielādēti');
+        updateNotification({
+            id:"uploading-file",
+            color: 'teal',
+            autoClose: true,
+            title: "Augšupielāde izdevās!",
+            loading: false,
+            icon: <IconCheck size={18}/>
+        });
 
       setFiles([]); // Clear files after upload
     } catch (error) {
       console.error('Error uploading files:', error);
-      alert('Neizdevās augšupielādēt failus');
     }
   };
 
@@ -97,7 +134,7 @@ export default function UploadFiles() {
             id="folderSelect"
             value={selectedFolder}
             onChange={handleFolderChange}
-            data={folders.map(folder => ({ value: folder, label: folder }))}
+            data={folders.map(folder => ({ value: folder.name, label: folder.name }))}
             placeholder="Mape nav izvēlēta"
             classNames={dropdown}
             variant='filled'
@@ -105,7 +142,7 @@ export default function UploadFiles() {
         </div>
       ) : (
         <div>
-          <DropzoneArea files={files} setFiles={setFiles} /> 
+          <DropzoneArea files={files} setFiles={setFiles} selectedFolder={selectedFolder}/> 
           <div className="submit-wrapper">
             <UploadButton onUpload={handleFileUpload} />
           </div>
@@ -116,12 +153,20 @@ export default function UploadFiles() {
                 src={URL.createObjectURL(file)}
                 alt={`Preview ${index}`}
                 className='preview-image'
-                onClick={() => handleImageClick(URL.createObjectURL(file))}
+                onClick={() => handleImageClick(URL.createObjectURL(file), index)}
               />
             ))}
           </div>
           {selectedImage && (
             <div className='modal' onClick={handleCloseModal}>
+                <Button
+                    variant={"filled"}
+                    color={"red"}
+                    style={{ position: 'absolute', top: '10px', left: '10px' }}
+                    onClick={() => handleRemoveImage()}
+                >
+                    Noņemt attēlu
+                </Button>
               <img src={selectedImage} alt="Full size" className='modal-image' />
             </div>
           )}

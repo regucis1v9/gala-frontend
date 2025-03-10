@@ -1,6 +1,6 @@
 
 import ViewUsers from "../Components/Users/ViewUsers";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 
 export default function UserManagment() {
 

@@ -1,6 +1,6 @@
 
 import UploadFiles from "../Components/Upload/UploadFiles";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 export default function Upload() {
   return (
     <Layout>

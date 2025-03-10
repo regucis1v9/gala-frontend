@@ -4,7 +4,7 @@ import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
 import { IconCloudUpload, IconX, IconDownload } from '@tabler/icons-react';
 import classes from '../../style/DropzoneButton.module.css';
 
-export default function DropzoneArea({ files, setFiles }) {
+export default function DropzoneArea({ files, setFiles, selectedFolder }) {
   const theme = useMantineTheme();
   const openRef = useRef(null);
 
@@ -69,7 +69,7 @@ export default function DropzoneArea({ files, setFiles }) {
           <Text ta="center" fw={700} fz="lg" mt="xl" className={classes.textWidth}>
             <Dropzone.Accept>Ievelc failus šeit</Dropzone.Accept>
             <Dropzone.Reject>Failiem jāūt ne vairāk par 2MB</Dropzone.Reject>
-            <Dropzone.Idle>Augšupielādē failus</Dropzone.Idle>
+            <Dropzone.Idle>Augšupielādē failus {selectedFolder} mapē</Dropzone.Idle>
           </Text>
           <Text ta="center" fz="sm" mt="xs" c="dimmed" className={classes.textWidth}>
             Ievelc failus lai augšupielādētu tos. Sistēma atļauj <i>.png, .jpg, .jpeg, .svg</i> failus, kas ir līdz 50MB.

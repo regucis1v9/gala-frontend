@@ -11,6 +11,7 @@ export default function Layout({ children }) {
   const [opened, { toggle }] = useDisclosure();
   const [activeComponent, setActiveComponent] = useState(() => parseInt(localStorage.getItem('activeComponent')) || 1);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState("")
   const navigate = useNavigate();
 
   const updateSidebarSection = (id) => {
@@ -18,13 +19,12 @@ export default function Layout({ children }) {
     localStorage.setItem('activeComponent', id);
   };
 
-  // Function to fetch user data from the API
   const fetchUserData = async () => {
     const token = localStorage.getItem('token'); 
 
     if (!token) {
       setIsAuthenticated(false);
-      navigate('/'); // Redirect to login if no token
+      navigate('/'); 
       return;
     }
 
@@ -38,27 +38,33 @@ export default function Layout({ children }) {
       });
 
       if (!response.ok) {
-        // Handle different response statuses
         if (response.status === 500 || response.status === 401) {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
-          navigate('/'); // Redirect to login
+          navigate('/');
           return;
         }
         throw new Error('Failed to fetch user data');
       }
 
       const data = await response.json();
-      setIsAuthenticated(true); // Set authentication to true if fetch is successful
+      setRole(data.role)
+      console.log(data.role)
+      console.log(role)
+      setIsAuthenticated(true); 
     } catch (error) {
       console.error("Error fetching user data:", error);
       setIsAuthenticated(false);
-      navigate('/'); // Redirect to login on error
+      navigate('/'); 
     }
   };
 
   useEffect(() => {
-    fetchUserData(); // Fetch user data when component mounts
+    const authenticateUser = async () => {
+      await fetchUserData();
+    };
+
+    authenticateUser();
   }, []);
 
   return (
@@ -88,12 +94,12 @@ export default function Layout({ children }) {
         />
         <NavLink
           component={Link}
-          to="/dashboard/createSlideshow"
-          label="Slaidrādes"
-          leftSection={<IconPlayerTrackNext size="1rem" stroke={1.5} />}
+          to="/dashboard/view"
+          label="Mapes"
+          leftSection={<IconFolder size="1rem" stroke={1.5} />}
           childrenOffset={28}
-          onClick={() => updateSidebarSection(6)}
-          active={activeComponent === 6}
+          onClick={() => updateSidebarSection(4)}
+          active={activeComponent === 4}
           color="blue"
           variant="light"
         />
@@ -110,15 +116,28 @@ export default function Layout({ children }) {
         />
         <NavLink
           component={Link}
-          to="/dashboard/view"
-          label="Mapes"
-          leftSection={<IconFolder size="1rem" stroke={1.5} />}
+          to="#"
+          label="Slaidrādes"
+          leftSection={<IconPlayerTrackNext size="1rem" stroke={1.5} />}
           childrenOffset={28}
-          onClick={() => updateSidebarSection(4)}
-          active={activeComponent === 4}
+          onClick={() => updateSidebarSection(6)}
+          active={activeComponent === 6}
           color="blue"
           variant="light"
-        />
+        >
+          <NavLink
+            component={Link}
+            to="/dashboard/createSlideshow"
+            label="Izveidot slaidrādes"
+            leftSection={<IconPlus size="1rem" stroke={1.5} />}
+          />
+          <NavLink
+            component={Link}
+            to="/dashboard/"
+            label="Pārskatīt slaidrādes"
+            leftSection={<IconEye size="1rem" stroke={1.5} />}
+          />
+        </NavLink>
         <NavLink
           label="Lietotāji"
           leftSection={<IconUser size="1rem" stroke={1.5} />}
@@ -149,3 +168,4 @@ export default function Layout({ children }) {
     </AppShell>
   );
 }
+

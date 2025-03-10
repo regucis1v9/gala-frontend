@@ -9,6 +9,8 @@ import classes from "../../style/SlidesCreation.module.css";
 import position from "../../style/DescriptionPosition.module.css"
 import description from "../../style/SlideDescription.module.css";
 import { IconX, IconCirclePlusFilled, IconArrowRight, IconPlus } from "@tabler/icons-react";
+import {showNotification, updateNotification} from "@mantine/notifications";
+
 
 export default function SlideshowCreation() {
     const { colorScheme, setColorScheme } = useMantineColorScheme();
@@ -29,7 +31,7 @@ export default function SlideshowCreation() {
     const [horizontalPosition, setHorizontalPosition] = useState('Pa vidu'); 
     
     const [textValue, onTextChange] = useState('rgba(255, 255, 255, 1)');
-    const [bgValue, onBgChange] = useState('rgba(0, 0, 0, 1)');
+    const [bgValue, onBgChange] = useState('rgba(40,34,98,1)');
 
     const hasImageLink = buttonsData.some(button => button.imageLink.trim() !== "");
 
@@ -46,7 +48,7 @@ export default function SlideshowCreation() {
         
         if (selectedButton) {
             onTextChange(selectedButton.textColor || 'rgba(255, 255, 255, 1)'); 
-            onBgChange(selectedButton.bgColor || 'rgba(0, 0, 0, 1)');          
+            onBgChange(selectedButton.bgColor || 'rgba(40,34,98,1)');          
         }
     }, [selectedButtonId, buttonsData]);
     
@@ -62,7 +64,7 @@ export default function SlideshowCreation() {
       };
       
     const addButton = () => {
-        const newButton = { id: nextId, imageLink: "", description: "",textColor: 'rgba(255, 255, 255, 1)', bgColor: 'rgba(0, 0, 0, 1)', textPosition: "middle-center" };
+        const newButton = { id: nextId, imageLink: "", description: "",textColor: 'rgba(255, 255, 255, 1)', bgColor: 'rgba(40,34,98, 1)', textPosition: "middle-center" };
         dispatch(setButtonsData([...(buttonsData || []), newButton]));
         setSelectedButtonId(newButton.id);
         setNextId((prevId) => prevId + 1);
@@ -185,7 +187,6 @@ export default function SlideshowCreation() {
                                                 position: "absolute",
                                                 top: 10,
                                                 right: 10,
-                                                zIndex: 1,
                                                 fontSize: 16,
                                                 width: 24,
                                                 height: 24,
@@ -320,9 +321,11 @@ export default function SlideshowCreation() {
                                     </Popover.Target>
                                     <Popover.Dropdown >
                                         <ColorPicker
+                                        disabled={!textValue}
                                          value={textValue}
                                          onChange={handleTextColorChange}
                                          format="rgba"
+                                         withPicker
                                          swatches={['#2e2e2e', '#868e96','#ffffff', '#fa5252', '#e64980', '#be4bdb', '#7950f2', '#228be6', '#15aabf', '#12b886', '#40c057', '#82c91e', '#fab005', '#fd7e14']}
                                         ></ColorPicker>
                                     </Popover.Dropdown>
@@ -342,7 +345,9 @@ export default function SlideshowCreation() {
                                     </Popover.Target>
                                     <Popover.Dropdown>
                                         <ColorPicker
+                                        disabled={!textValue}
                                          value={bgValue}
+                                         withPicker
                                          onChange={handleBgColorChange}
                                          format="rgba"
                                          swatches={['#2e2e2e', '#868e96','#ffffff', '#fa5252', '#e64980', '#be4bdb', '#7950f2', '#228be6', '#15aabf', '#12b886', '#40c057', '#82c91e', '#fab005', '#fd7e14']}
@@ -400,7 +405,7 @@ export default function SlideshowCreation() {
                 }}
                 centered
             >
-                <SlideshowModal></SlideshowModal>
+                <SlideshowModal closeContinue={closeContinue}></SlideshowModal>
             </Modal>
         </div>
     );

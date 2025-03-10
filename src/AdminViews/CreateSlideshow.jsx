@@ -1,5 +1,5 @@
 import SlideshowCreation from "../Components/Slideshow/SlideshowCreation";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 
 export default function CreateSlideshow() {
 

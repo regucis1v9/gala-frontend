@@ -2,20 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './style/index.scss';
 import '@mantine/core/styles.css';
-import App from './Views/UploadFiles';
-import Upload from './Views/UploadFiles';
-import ViewFiles from './Views/ViewFolders';
-import Manage from './Views/ManageScreens';
-import FolderContent from './Views/FolderContent';
-import UserActions from './Views/UserActions';
-import UserCreation from './Views/UserCreation';
-import UserManagment from './Views/UserManagment';
+import '@mantine/notifications/styles.css';
+import App from './AdminViews/UploadFiles';
+import Upload from './AdminViews/UploadFiles';
+import ViewFiles from './AdminViews/ViewFolders';
+import Manage from './AdminViews/ManageScreens';
+import FolderContent from './AdminViews/FolderContent';
+import UserCreation from './AdminViews/UserCreation';
+import UserManagment from './AdminViews/UserManagment';
 import Login from './Components/Auth/Login';
-import CreateSlideshow from './Views/CreateSlideshow';
-import ViewAllSlideshows from './Views/ViewAllSlideshows';
+import CreateSlideshow from './AdminViews/CreateSlideshow';
+import ViewAllSlideshows from './AdminViews/ViewAllSlideshows';
 import DisplaySlides from './Components/Screens/DisplaySlides';
 import NotFound  from './Components/Mantine/NotFound';
+import FolderContentUser from './UserViews/FolderContentUser';
+import ViewFoldersUser from './UserViews/ViewFoldersUser';
+import ViewScreensUser from './UserViews/ViewScreensUser';
 import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { Provider } from 'react-redux';
 import store from './store'; 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -44,24 +48,26 @@ const themeOverride = {
 
 root.render(
   <MantineProvider theme={themeOverride}>
-    <Provider store={store}>
-        <Router>
-            <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/dashboard" element={<App />} />
-                <Route path="/dashboard/upload" element={<Upload />} />
-                <Route path="/dashboard/view" element={<ViewFiles />} />
-                <Route path="/dashboard/selectScreen" element={<Manage />} />
-                <Route path="/dashboard/folderContent/:folderName" element={<FolderContent />} />
-                <Route path="/dashboard/users" element={<UserActions />} />
-                <Route path="/dashboard/createUser" element={<UserCreation />} />
-                <Route path="/dashboard/viewAllUsers" element={<UserManagment />} />
-                <Route path="/dashboard/createSlideshow/" element={<CreateSlideshow />} />
-                <Route path="/dashboard/" element={<ViewAllSlideshows />} />
-                <Route path="/screen/:id" element={<DisplaySlides />} />
-                <Route path="*" element={<NotFound />} />
-            </Routes>
-        </Router>
-    </Provider>
+    <Notifications/>
+      <Provider store={store}>
+          <Router>
+              <Routes>
+                  <Route path="/" element={<Login />} />
+                  <Route path="/dashboard" element={<App />} />
+                  <Route path="/dashboard/upload" element={<Upload />} />
+                  <Route path="/dashboard/view" element={<ViewFiles />} />
+                  <Route path="/dashboard/selectScreen" element={<Manage />} />
+                  <Route path="/dashboard/folderContent/:folderName" element={<FolderContent />} />
+                  <Route path="/dashboard/createUser" element={<UserCreation />} />
+                  <Route path="/dashboard/viewAllUsers" element={<UserManagment />} />
+                  <Route path="/dashboard/createSlideshow/" element={<CreateSlideshow />} />
+                  <Route path="/dashboard/" element={<ViewAllSlideshows />} />
+                  <Route path="/viewFolders" element={<ViewFoldersUser />} />
+                  <Route path="/folderContent/:folderName" element={<FolderContentUser />} />
+                  <Route path="/screen/:id" element={<DisplaySlides />} />
+                  <Route path="*" element={<NotFound />} />
+              </Routes>
+          </Router>
+      </Provider>
   </MantineProvider>
 );

@@ -1,5 +1,5 @@
 import CreateUsers from "../Components/Users/CreateUsers";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 
 export default function UserCreation() {
 

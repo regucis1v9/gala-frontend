@@ -15,7 +15,7 @@ export default function ThemeToggle() {
     })
     .then((response) => {
       if (response.ok) {
-        // Handle successful logout (e.g., redirect or show a message)
+        localStorage.removeItem('token')
         console.log('Successfully logged out');
         window.location.href = '/'; // Redirect to login page
       } else {

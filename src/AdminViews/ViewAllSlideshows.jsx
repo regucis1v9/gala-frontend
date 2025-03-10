@@ -1,6 +1,6 @@
 
 import ViewAllSlideshows from "../Components/Slideshow/ViewAllSlideshows";
-import Layout from "../layout";
+import Layout from "../adminLayout";
 
 export default function Manage() {
   return (

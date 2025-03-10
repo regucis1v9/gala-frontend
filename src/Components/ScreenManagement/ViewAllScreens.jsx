@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateActiveComponent } from '../../actions/componentAction';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Modal, Text } from '@mantine/core';
-import { IconSearch, IconDeviceTv, IconMinus } from '@tabler/icons-react';
+import {IconSearch, IconDeviceTv, IconMinus, IconX, IconCheck} from '@tabler/icons-react';
 import classes from "../../style/SearchInput.module.css";
+import {showNotification, updateNotification} from "@mantine/notifications";
+
 
 export default function ViewAllScreens() {
     const dispatch = useDispatch();
@@ -27,17 +29,38 @@ export default function ViewAllScreens() {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!response.ok) {
+                showNotification({
+                    id: "fetching",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda atlasot failus.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
             setScreens(data);
         } catch (error) {
-            console.error('Error fetching screens:', error);
+            showNotification({
+                id: "fetching",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda atlasot failus.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
         }
     };
 
     const deleteScreen = async (id) => {
         try {
+            showNotification({
+                id: 'deleting',
+                autoClose: false,
+                title: "Dzēš failus...",
+                loading: true
+            });
             const response = await fetch('http://localhost/api/deleteScreen', {
                 method: 'POST',
                 headers: {
@@ -48,12 +71,35 @@ export default function ViewAllScreens() {
             });
 
             if (!response.ok) {
+                updateNotification({
+                    id: "deleting",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda dzēšot ekrānu.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
                 throw new Error('Failed to delete screen');
             }
-
+            updateNotification({
+                id: "deleting",
+                color: 'teal',
+                autoClose: true,
+                title: "Ekrāns izdzēsts veiksmīgi!",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
             setScreens((prevScreens) => prevScreens.filter(screen => screen.id !== id));
             setShowDeleteModal(false); // Close the modal after deletion
         } catch (error) {
+            updateNotification({
+                id: "deleting",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda dzēšot ekrānu.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error deleting screen:', error);
         }
     };
@@ -75,6 +121,12 @@ export default function ViewAllScreens() {
 
     const addScreen = async () => {
         try {
+            showNotification({
+                id: 'creating',
+                autoClose: false,
+                title: "Izveido ekrānu...",
+                loading: true
+            });
             const response = await fetch('http://localhost/api/addScreen', {
                 method: 'GET',
                 headers: {
@@ -84,12 +136,36 @@ export default function ViewAllScreens() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add screen');
+                updateNotification({
+                    id: "creating",
+                    color: 'red',
+                    autoClose: false,
+                    title: "Radās kļūda izveidotjot ekrānu.",
+                    loading: false,
+                    icon: <IconX size={18} />
+                });
+                throw new Error('Failed to delete screen');
             }
+            updateNotification({
+                id: "creating",
+                color: 'teal',
+                autoClose: true,
+                title: "Ekrāns izveidots veiksmīgi!",
+                loading: false,
+                icon: <IconCheck size={18} />
+            });
 
             // Refetch screens after adding a new one
             fetchScreens();
         } catch (error) {
+            updateNotification({
+                id: "creating",
+                color: 'red',
+                autoClose: false,
+                title: "Radās kļūda izveidotjot ekrānu.",
+                loading: false,
+                icon: <IconX size={18} />
+            });
             console.error('Error adding screen:', error);
         }
     };

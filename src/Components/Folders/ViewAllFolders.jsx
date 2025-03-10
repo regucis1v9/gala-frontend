@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { IconSearch, IconMinus, IconFolderFilled } from '@tabler/icons-react';
+import {IconSearch, IconMinus, IconFolderFilled, IconX, IconCheck} from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 import { updateActiveComponent } from '../../actions/componentAction';
-import { Button, Input, useMantineTheme, Modal, Group, Text, useMantineColorScheme } from '@mantine/core';
+import { Button, Input, useMantineTheme, Modal, Group, Text, useMantineColorScheme, Checkbox, TextInput } from '@mantine/core';
 import classes from "../../style/SearchInput.module.css";
+import {showNotification, updateNotification} from "@mantine/notifications";
 
 export default function ViewFiles() {
   const theme = useMantineTheme();
@@ -19,6 +20,8 @@ export default function ViewFiles() {
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
   const dispatch = useDispatch();
+  const [hasPassword, setHasPassword] = useState(false);
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     fetch("http://localhost/api/listFolders", {
@@ -27,10 +30,18 @@ export default function ViewFiles() {
     })
       .then((response) => response.json())
       .then((data) => {
+          console.log(data)
         setFolders(data.folders);
       })
       .catch((error) => {
-        console.error("Error fetching folder list:", error);
+          showNotification({
+              id:'fetch-error',
+              color:'red',
+              autoClose: false,
+              title: "Kļūda iegūstot mapju sarakstu",
+              message:error.message,
+              icon: <IconX size={18}/>
+          });
       });
   }, []);
 
@@ -38,10 +49,9 @@ export default function ViewFiles() {
     dispatch(updateActiveComponent('view'));
   }, [dispatch]);
 
-  const filteredFolders = folders.filter(folder => 
-    folder.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+    const filteredFolders = folders.filter(folder =>
+        folder.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   const handleAddFolder = async () => {
     if (newFolderName.length === 0) {
       setError("Nosaukums nevar būt tukšs");
@@ -55,46 +65,122 @@ export default function ViewFiles() {
 
     setError('');
     try {
+        showNotification({
+            id:'creating-folder',
+            autoClose: false,
+            title: "Izveido mapi...",
+            loading: true
+        });
+        if(!hasPassword){
+            setPassword("")
+        }
       const response = await fetch("http://localhost/api/createFolder", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ folder_name: newFolderName }),
+        body: JSON.stringify({
+            folder_name: newFolderName,
+            password:password,
+        }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create folder');
-      }
-
+        if (!response.ok) {
+            const errorData = await response.json()
+            updateNotification({
+                id: "creating-folder",
+                color: 'red',
+                autoClose: true,
+                title: "Mapes izveide neizdevās.",
+                message: errorData.error || "Nezināma kļūda, ja tā turpinās, sazināties ar skolas IT speciālistu",
+                loading: false,
+                icon: <IconX size={18} />
+            });
+            return;
+        }
+        updateNotification({
+            id:"creating-folder",
+            color:'teal',
+            autoClose: true,
+            title: "Mape izveidota veiksmīgi!",
+            loading: false,
+            icon: <IconCheck size={18}/>
+        });
       const data = await response.json();
-      setFolders((prevFolders) => [...prevFolders, data.folder]); // Use the returned folder name
+        setFolders((prevFolders) => [
+            ...prevFolders,
+            { name: data.folder, has_password: hasPassword } // Ensure object structure
+        ]);
       setShowAddFolderModal(false);
       setNewFolderName('');
+      setPassword("")
     } catch (error) {
-      console.error('Error creating folder:', error);
-      setError('Radās kļūda izveidojot mapi'); // Display error message
+        console.log(error)
+        showNotification({
+            id:'creating-folder',
+            color:'red',
+            autoClose: false,
+            title: "Kļūda veicot pieprasījumu uz aizmugurgalsistēmu",
+            message:error.message,
+            icon: <IconX size={18}/>
+        });
     }
   };
 
-  const deleteFolder = async (folder) => {
-    try {
-      const response = await fetch("http://localhost/api/deleteFolder", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ folder_name: folder }),
-      });
+    const deleteFolder = async (folder) => {
+        try {
+            showNotification({
+                id: 'deleting-folder',
+                autoClose: false,
+                title: "Dzēš mapi...",
+                loading: true
+            });
 
-      if (!response.ok) {
-        throw new Error('Failed to delete folder');
-      }
+            const response = await fetch("http://localhost/api/deleteFolder", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ folder_name: folder }),
+            });
+            if (!response.ok) {
+                updateNotification({
+                    id: "deleting-folder",
+                    color: 'red',
+                    autoClose: true,
+                    title: "Mapes izdzēšana neizdevās.",
+                    loading: false,
+                    icon: <IconX size={18}/>
+                });
+                throw new Error('Failed to delete folder');
+            }
+            
+            updateNotification({
+                id: "deleting-folder",
+                color: 'teal',
+                autoClose: true,
+                title: "Mape izdzēsta veiksmīgi!",
+                loading: false,
+                icon: <IconCheck size={18}/>
+            });
+            
+            setFolders((prevFolders) => prevFolders.filter((f) => f.name !== folder));
+            
+            setShowDeleteFolderModal(false);
 
-      setFolders((prevFolders) => prevFolders.filter(f => f !== folder));
-      setShowDeleteFolderModal(false); // Close the modal after deletion
-    } catch (error) {
-      console.error('Error deleting folder:', error);
-    }
-  };
+        } catch (error) {
+            console.error('Error deleting folder:', error);
+            showNotification({
+                id: 'deleting-folder',
+                color: 'red',
+                autoClose: false,
+                title: "Kļūda veicot pieprasījumu uz aizmugurgalsistēmu",
+                message: error.message,
+                icon: <IconX size={18}/>
+            });
+        }
+    };
 
-  const handleDeleteButtonClick = (folder) => {
+    const handleDeleteButtonClick = (folder) => {
     setFolderToDelete(folder);
     setShowDeleteFolderModal(true);
   };
@@ -118,16 +204,29 @@ export default function ViewFiles() {
         title="Ievadiet mapes nosaukumu:"
         centered
       >
-        <Text size="sm" fw={500} mb={3}>
-          Mapes nosaukums
-        </Text>
-        <Input
+        <TextInput
           value={newFolderName}
           onChange={(e) => setNewFolderName(e.target.value)}
           placeholder="Mapes nosaukums"
           variant="filled"
+          label="Mapes nosaukums"
         />
         {error && <Text color="red">{error}</Text>}
+          <TextInput
+              mt={20}
+              placeholder="Mapes parole"
+              variant="filled"
+              label="Mapes Parole"
+              disabled={!hasPassword}
+              value={password}
+              onChange={(event) => setPassword(event.currentTarget.value)}
+          />
+          <Checkbox
+              mt={20}
+              label={"Mape ar paroli"}
+              checked={hasPassword}
+              onChange={(event) => setHasPassword(event.currentTarget.checked)}
+          />
         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={handleAddFolder}>Izveidot</Button>
           <Button variant="outline" onClick={() => setShowAddFolderModal(false)}>Atcelt</Button>
@@ -152,15 +251,15 @@ export default function ViewFiles() {
         {filteredFolders.length > 0 ? (
           filteredFolders.map((folder, index) => (
             <div key={index} className="screen-button">
-              <Link to={`/dashboard/folderContent/${folder}`} title={folder}>
+              <Link to={`/dashboard/folderContent/${folder.name}`} title={folder}>
                 <div className="folder-icon">
                   <IconFolderFilled size={60} color={isDarkMode ? theme.colors.blue[8] : theme.colors.blue[6]} />
                 </div>
-                <Text ta="center" color={isDarkMode ? "white" : "black"}>{folder}</Text>
+                <Text ta="center" color={isDarkMode ? "white" : "black"}>{folder.name}</Text>
               </Link>
               <button className="red" onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteButtonClick(folder);
+                handleDeleteButtonClick(folder.name);
               }}>
                 <IconMinus size={20} stroke={3} color='white' />
               </button>
