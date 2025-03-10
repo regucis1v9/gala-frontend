@@ -111,7 +111,7 @@ export default function ViewFolderContent() {
                         errorMessage = "Lapa nav atrasta. Pārbaudiet API adresi.";
                     } else if (response.status === 500) {
                         errorMessage = "Servera kļūda. Mēģiniet vēlreiz vēlāk.";
-                    }
+                    } 
                 }
 
                 updateNotification({
