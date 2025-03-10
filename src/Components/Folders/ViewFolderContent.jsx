@@ -17,6 +17,7 @@ export default function ViewFolderContent() {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const token = localStorage.getItem('token');
   const dispatch = useDispatch();
+    const API_URL = process.env.REACT_APP_API_URL;
   
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function ViewFolderContent() {
     const fetchFiles = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost/api/retrieveFiles`, {
+            const response = await fetch(`${API_URL}/api/retrieveFiles`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ export default function ViewFolderContent() {
                 title: "Dzēš failus...",
                 loading: true
             });
-            const response = await fetch('http://localhost/api/deleteFiles', { // Fixed typo in URL
+            const response = await fetch(`${API_URL}/api/deleteFiles`, { // Fixed typo in URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -209,7 +210,7 @@ export default function ViewFolderContent() {
           {filteredFiles.map((file) => (
             <img
               key={extractFileName(file)}
-              src={`http://localhost${file}`}
+              src={`${file}`}
               alt={`File ${extractFileName(file)}`}
               className={`preview-image ${deleteImages && imagesToDelete.includes(extractFileName(file)) ? 'clicked-image' : ''}`}
               onClick={() => handleImageClick(file)}

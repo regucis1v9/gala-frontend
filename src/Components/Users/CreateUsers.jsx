@@ -10,8 +10,9 @@ export default function CreateUsers() {
   const token = localStorage.getItem('token');
   const [createdUser, setCreatedUser] = useState(false);
   const [visible, setVisible] = useState(false);
+    const API_URL = process.env.REACT_APP_API_URL;
 
-  const [username, setUsername] = useState("");
+    const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
@@ -80,7 +81,7 @@ export default function CreateUsers() {
               title: "Veic lietotāja izveidi...",
               loading: true
           });
-        const response = await fetch("http://localhost/api/createUser", {
+        const response = await fetch(`${API_URL}/api/createUser`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

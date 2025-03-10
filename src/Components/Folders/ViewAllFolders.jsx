@@ -8,6 +8,7 @@ import classes from "../../style/SearchInput.module.css";
 import {showNotification, updateNotification} from "@mantine/notifications";
 
 export default function ViewFiles() {
+    const API_URL = process.env.REACT_APP_API_URL;    
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
   const isDarkMode = colorScheme === 'dark'; // Check if dark mode is active
@@ -24,7 +25,7 @@ export default function ViewFiles() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    fetch("http://localhost/api/listFolders", {
+    fetch(`${API_URL}/api/listFolders`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
     })
@@ -74,7 +75,7 @@ export default function ViewFiles() {
         if(!hasPassword){
             setPassword("")
         }
-      const response = await fetch("http://localhost/api/createFolder", {
+      const response = await fetch(`${API_URL}/api/createFolder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
@@ -133,7 +134,7 @@ export default function ViewFiles() {
                 loading: true
             });
 
-            const response = await fetch("http://localhost/api/deleteFolder", {
+            const response = await fetch(`${API_URL}/api/deleteFolder`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

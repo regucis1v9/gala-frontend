@@ -13,6 +13,8 @@ export default function Layout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [role, setRole] = useState("")
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
+
 
   const updateSidebarSection = (id) => {
     setActiveComponent(id);
@@ -29,7 +31,7 @@ export default function Layout({ children }) {
     }
 
     try {
-      const response = await fetch('http://localhost/api/user', {
+      const response = await fetch(`${API_URL}/api/user`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

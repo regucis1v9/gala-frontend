@@ -7,8 +7,10 @@ export default function CreateFolders() {
   const [error, setError] = useState('');
   const dispatch = useDispatch();
   const token = localStorage.getItem('token')
+    const API_URL = process.env.REACT_APP_API_URL;
 
-  const handleInputChange = (e) => {
+
+    const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function CreateFolders() {
 
     setError(''); 
     try {
-      const response = await fetch('http://localhost/api/createFolder', {
+      const response = await fetch(`${API_URL}/api/createFolder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json','Accept':'application/json', 'Authorization':`Bearer ${token}` },
         body: JSON.stringify({ 

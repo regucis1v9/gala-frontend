@@ -17,9 +17,10 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const token = localStorage.getItem('token');
+    const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    fetch("http://localhost/api/listFolders", {
+    fetch(`${API_URL}api/listFolders`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
     })
@@ -37,7 +38,7 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
   const fetchFiles = async (folderName) => {
     setIsLoadingFiles(true);
     try {
-      const response = await fetch('http://localhost/api/retrieveFiles', {
+      const response = await fetch(`${API_URL}/api/retrieveFiles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -18,6 +18,8 @@ export default function ViewUsers() {
     const [deleteModalOpened, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
     const [editModalOpened, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
     const [isFormValid, setIsFormValid] = useState(false);
+    const API_URL = process.env.REACT_APP_API_URL;
+
 
     const form = useForm({
         initialValues: {
@@ -44,7 +46,7 @@ export default function ViewUsers() {
     const fetchAllUsers = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost/api/getAllUsers', {
+            const response = await fetch(`${API_URL}/api/getAllUsers`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
             });
@@ -93,7 +95,7 @@ export default function ViewUsers() {
                 title: "Veic lietotāja dzēšanu...",
                 loading: true
             });
-            const response = await fetch('http://localhost/api/deleteUser', {
+            const response = await fetch(`${API_URL}/api/deleteUser`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ id: userToDelete.id }),
@@ -157,14 +159,14 @@ export default function ViewUsers() {
                 requestData.password = values.password;
             }
 
-            const response = await fetch('http://localhost/api/editUser', {
+            const response = await fetch(`${API_URL}/api/editUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(requestData), // ✅ Ensure JSON formatting
+                body: JSON.stringify(requestData), 
             });
 
             const data = await response.json();

@@ -7,6 +7,7 @@ import { IconSearch } from '@tabler/icons-react';
 import classes from "../../style/SearchInput.module.css"
 
 export default function FolderContentUser() {
+    const API_URL = process.env.REACT_APP_API_URL;
   const { folderName } = useParams();
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +25,7 @@ export default function FolderContentUser() {
   const fetchFiles = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost/api/check-folder/${folderName}`, {
+      const response = await fetch(`${API_URL}/api/check-folder/${folderName}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -102,7 +103,7 @@ export default function FolderContentUser() {
           {filteredFiles.map((file) => (
             <img
               key={extractFileName(file)}
-              src={`http://localhost${file}`}
+              src={`${file}`}
               alt={`File ${extractFileName(file)}`}
               className={`preview-image ${deleteImages && imagesToDelete.includes(extractFileName(file)) ? 'clicked-image' : ''}`}
               onClick={() => handleImageClick(file)}

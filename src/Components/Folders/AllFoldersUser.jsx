@@ -5,8 +5,8 @@ import { useDispatch } from 'react-redux';
 import { updateActiveComponent } from '../../actions/componentAction';
 import { Button, Input, useMantineTheme, Modal, Group, Text, useMantineColorScheme, PasswordInput } from '@mantine/core';
 import classes from "../../style/SearchInput.module.css";
-
 export default function AllFoldersUser() {
+    const API_URL = process.env.REACT_APP_API_URL;
     const theme = useMantineTheme();
     const { colorScheme } = useMantineColorScheme();
     const isDarkMode = colorScheme === 'dark';
@@ -21,7 +21,7 @@ export default function AllFoldersUser() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("http://localhost/api/listFolders", {
+        fetch(`${API_URL}/api/listFolders`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
         })
@@ -54,7 +54,7 @@ export default function AllFoldersUser() {
     };
 
     const unlockFolder = () => {
-        fetch("http://localhost/api/unlockFolder", {
+        fetch(`${API_URL}/api/unlockFolder`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

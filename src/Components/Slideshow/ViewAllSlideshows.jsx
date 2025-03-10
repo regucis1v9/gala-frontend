@@ -26,12 +26,13 @@ export default function ViewAllSlideshows() {
   const [screenCount, setScreenCount] = useState(0);
   const [todaysSlidesCount, setTodaysSlidesCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
-  const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - var(--mantine-spacing-md) / 2)`;
+    const API_URL = process.env.REACT_APP_API_URL;
+    const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - var(--mantine-spacing-md) / 2)`;
 
   useEffect(() => {
     async function fetchSlideshows() {
       try {
-        const response = await fetch('http://localhost/api/getAllSlides');
+        const response = await fetch(`${API_URL}/api/getAllSlides`);
         const data = await response.json();
         setSlideshows(data);
         countTodaysSlides(data); 
@@ -48,7 +49,7 @@ export default function ViewAllSlideshows() {
     async function fetchScreens() {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost/api/getAllScreens', {
+        const response = await fetch(`${API_URL}/api/getAllScreens`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -66,7 +67,7 @@ export default function ViewAllSlideshows() {
     async function fetchFolders() {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost/api/listFolders', {
+        const response = await fetch(`${API_URL}/api/listFolders`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -84,7 +85,7 @@ export default function ViewAllSlideshows() {
     async function fetchUsers() {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost/api/getAllUsers', {
+        const response = await fetch(`${API_URL}/api/getAllUsers`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

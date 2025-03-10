@@ -9,9 +9,9 @@ import {
   LoadingOverlay
 } from '@mantine/core';
 import classes from '../../style/Login.module.css';
-
 export default function Login() {
-  const [visible, setVisible] = useState(false);
+    const API_URL = process.env.REACT_APP_API_URL;
+    const [visible, setVisible] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -43,7 +43,7 @@ export default function Login() {
       setVisible(true); // Show loading overlay
       setIsLoading(true); // Start loading
       try {
-        const response = await fetch("http://localhost/api/login", {
+        const response = await fetch(`${API_URL}/api/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

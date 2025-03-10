@@ -10,11 +10,13 @@ const DisplaySlides = () => {
   const [loading, setLoading] = useState(true); // State for loading status
   const [error, setError] = useState(null); // State for error handling
   const autoplay = useRef(Autoplay({ delay: 5000 }));
+    const API_URL = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
+
+    useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const response = await fetch(`http://localhost/api/getSlidesByScreen/${id}`);
+        const response = await fetch(`${API_URL}/getSlidesByScreen/${id}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

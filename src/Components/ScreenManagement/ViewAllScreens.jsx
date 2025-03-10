@@ -9,6 +9,7 @@ import {showNotification, updateNotification} from "@mantine/notifications";
 
 
 export default function ViewAllScreens() {
+    const API_URL = process.env.REACT_APP_API_URL;
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [screens, setScreens] = useState([]);
@@ -24,7 +25,7 @@ export default function ViewAllScreens() {
 
     const fetchScreens = async () => {
         try {
-            const response = await fetch('http://localhost/api/getAllScreens', {
+            const response = await fetch(`${API_URL}/api/getAllScreens`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -61,7 +62,7 @@ export default function ViewAllScreens() {
                 title: "Dzēš failus...",
                 loading: true
             });
-            const response = await fetch('http://localhost/api/deleteScreen', {
+            const response = await fetch(`${API_URL}/api/deleteScreen`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,7 +128,7 @@ export default function ViewAllScreens() {
                 title: "Izveido ekrānu...",
                 loading: true
             });
-            const response = await fetch('http://localhost/api/addScreen', {
+            const response = await fetch(`${API_URL}/api/addScreen`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -16,11 +16,13 @@ export default function UploadFiles() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
+    const API_URL = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
+
+    useEffect(() => {
     const fetchFolders = async () => {
       try {
-        const response = await fetch('http://localhost/api/listFolders', {
+        const response = await fetch(`${API_URL}/api/listFolders`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -91,7 +93,7 @@ export default function UploadFiles() {
             title: "Augšupielādē failus...",
             loading: true
         });
-      const response = await fetch('http://localhost/api/uploadFiles', {
+      const response = await fetch(`${API_URL}/api/uploadFiles`, {
         method: 'POST',
         body: formData,
         headers: { 'Authorization': `Bearer ${token}` },

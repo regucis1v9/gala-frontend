@@ -19,7 +19,8 @@ export default function SlideshowModal({closeContinue}) {
     const [startDateError, setStartDateError] = useState(null); // State for error message
     const token = localStorage.getItem('token');
     const dispatch = useDispatch();
-    
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const reduxSelectedScreens = useSelector((state) => state.screens.screens || []); 
     const reduxStartDate = useSelector((state) => state.startDate.startDate || null);
     const reduxEndDate = useSelector((state) => state.endDate.endDate || null); 
@@ -63,7 +64,7 @@ export default function SlideshowModal({closeContinue}) {
 
     const fetchScreens = async () => {
         try {
-            const response = await fetch('http://localhost/api/getAllScreens', {
+            const response = await fetch(`${API_URL}/getAllScreens`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -134,7 +135,7 @@ export default function SlideshowModal({closeContinue}) {
                 title: "Saglabā slaidrādi...",
                 loading: true
             });
-            const response = await fetch('http://localhost/api/saveSlides', {
+            const response = await fetch(`${API_URL}/api/saveSlides`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
