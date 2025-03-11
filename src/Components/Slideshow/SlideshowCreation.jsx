@@ -17,6 +17,7 @@ export default function SlideshowCreation() {
     const { height: viewportHeight, width: viewportWidth } = useViewportSize();
     const { ref, width: containerWidth } = useElementSize();
     const { previewRef } = useElementSize();
+    const { mainRef, mainWidth, mainHeight } = useElementSize();
 
     const [openedSelect, { open: openSelect, close: closeSelect }] = useDisclosure(false);
     const [openedContinue, { open: openContinue, close: closeContinue }] = useDisclosure(false);
@@ -145,30 +146,29 @@ export default function SlideshowCreation() {
     
 
     return (
-        <div className="slideshow-create-main">
-            <span className="flex-column">
+        <div className="slideshow-create-main" ref={mainRef}>
+            <span className="scroll-area">
                 <Button 
                 onClick={addButton}
                 style={{ marginBottom: 10 }} 
-                w={containerWidth} 
+                w={200} 
                 rightSection={<IconPlus stroke={2} size={20} />}>
                     Pievienot Slaidu
                 </Button>
-                <ScrollArea offsetScrollbars  type="scroll" w={200} h={viewportHeight}>
-                    <Stack ref={ref} align="flex-start" justify="flex-start" gap="md">
+                <ScrollArea offsetScrollbars  type="scroll" w={mainWidth} h={150}>
+                    <Group ref={ref} width={viewportWidth} gap="md" wrap={"nowrap"}>
                         {Array.isArray(buttonsData) &&
                             buttonsData.map((button) => (
                                 <span className="preview-wrapper" key={button.id}>
                                     <div
                                         ref={previewRef}
-                                        className="aspect16-9"
                                         style={{
                                             position: "relative",
-                                            width: containerWidth,
+                                            width: 200,
                                         }}
                                     >
                                             <Button
-                                                w={containerWidth}
+                                                w={200}
                                                 h={112.5}
                                                 onClick={() => handleButtonClick(button.id)}
                                                 variant="outline"
@@ -201,11 +201,10 @@ export default function SlideshowCreation() {
                                     </div>
                                 </span>
                             ))}
-                    </Stack>
+                    </Group>
                 </ScrollArea>
             </span>
             <Box
-                w={availableWidth - 10}
                 h={viewportHeight}
                 gap="md"
                 justify="center"

@@ -758,8 +758,9 @@ p{
   min-height:100vh;
   width: 100%;
   padding:16px;
-  overflow-y:hidden ;
   display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 .slideshow-sidebar-box{
   width: 100%;
@@ -1042,11 +1043,21 @@ p{
     font-weight: 500;
   }
 }
+.scroll-area{
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+}
 @media screen and (max-width: 767px) {
+  
   .search-bar {
     margin-top:35px;
   }
   .centerCalendar{
     margin-top: 120px;
+  }
+  .slideshow-create-main{
+    margin-top:40px;
+    flex-direction: column;
   }
 }
