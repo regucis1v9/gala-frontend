@@ -116,7 +116,7 @@ export default function FolderContentUser() {
 
       {selectedImage && !deleteImages && (
         <div className='modal' onClick={handleCloseModal}>
-          <img src={`http://localhost${selectedImage}`} alt="Full size" className='modal-image' />
+          <img src={`${selectedImage}`} alt="Full size" className='modal-image' />
         </div>
       )}
     </div>
