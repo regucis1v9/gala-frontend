@@ -96,7 +96,7 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
                 files.map((file, index) => (
                   <img
                     key={index}
-                    src={`http://localhost${file}`}
+                    src={`${file}`}
                     alt={`File ${file}`}
                     className="preview-image"
                     onClick={() => handleImageClick(`${file}`)}
