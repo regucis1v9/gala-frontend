@@ -99,7 +99,7 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
                     src={`http://localhost${file}`}
                     alt={`File ${file}`}
                     className="preview-image"
-                    onClick={() => handleImageClick(`http://localhost${file}`)}
+                    onClick={() => handleImageClick(`${file}`)}
                   />
                 ))
               ) : (
