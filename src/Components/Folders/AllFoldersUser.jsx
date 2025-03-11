@@ -67,8 +67,8 @@ export default function AllFoldersUser() {
             .then(data => {
                 if (data.message === "Folder unlocked successfully") {
                     localStorage.setItem('session_token', data.session_token);
-                    
                     setModalOpen(false);
+                    navigate(`/folderContent/${selectedFolder.name}`);
                 } else {
                     setErrorMessage("Nepareiza parole. Mēģini vēlreiz");
                 }
