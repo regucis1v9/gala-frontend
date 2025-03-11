@@ -16,7 +16,7 @@ const DisplaySlides = () => {
     useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const response = await fetch(`${API_URL}/getSlidesByScreen/${id}`);
+        const response = await fetch(`${API_URL}/api/getSlidesByScreen/${id}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
