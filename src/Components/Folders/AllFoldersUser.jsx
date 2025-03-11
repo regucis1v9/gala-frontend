@@ -69,7 +69,6 @@ export default function AllFoldersUser() {
                     localStorage.setItem('session_token', data.session_token);
                     
                     setModalOpen(false);
-                    navigate(`/folderContent/${selectedFolder.name}`);
                 } else {
                     setErrorMessage("Nepareiza parole. Mēģini vēlreiz");
                 }
