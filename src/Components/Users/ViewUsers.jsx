@@ -353,7 +353,7 @@ export default function ViewUsers() {
                         {...form.getInputProps('role')}
                         data={[
                             { value: 'Administrātors', label: 'Administrātors' },
-                            { value: 'Lietotājs', label: 'Lietotājs' },
+                            { value: 'Rediģētājs', label: 'Rediģētājsgit ' },
                         ]}
                     />
                     <PasswordInput

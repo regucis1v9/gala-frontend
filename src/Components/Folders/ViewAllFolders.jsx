@@ -23,6 +23,7 @@ export default function ViewFiles() {
   const dispatch = useDispatch();
   const [hasPassword, setHasPassword] = useState(false);
   const [password, setPassword] = useState('');
+  const [searchError, setSearchError] = useState('Atlasa datus...');
 
   useEffect(() => {
     fetch(`${API_URL}/api/listFolders`, {
@@ -33,6 +34,7 @@ export default function ViewFiles() {
       .then((data) => {
           console.log(data)
         setFolders(data.folders);
+          setSearchError("Nevar atrast šādu mapi.")
       })
       .catch((error) => {
           showNotification({
@@ -195,7 +197,7 @@ export default function ViewFiles() {
         leftSection={<IconSearch size={18} />} 
         size='md' 
         variant="filled"
-        value={searchTerm} // Bind value to searchTerm
+        value={searchTerm}
         onChange={(e) => setSearchTerm(e.currentTarget.value)}  />
         <Button onClick={() => setShowAddFolderModal(true)} size='md'>Pievienot mapi</Button>
       </div>
@@ -267,7 +269,7 @@ export default function ViewFiles() {
             </div>
           ))
         ) : (
-          <Text className="search-error">Nevar atrast šādu mapi.</Text>
+          <Text className="search-error">{searchError}</Text>
         )}
       </div>
     </div>

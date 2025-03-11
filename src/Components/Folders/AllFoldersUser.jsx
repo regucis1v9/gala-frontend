@@ -19,6 +19,8 @@ export default function AllFoldersUser() {
     const token = localStorage.getItem('token');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [searchError, setSearchError] = useState('Atlasa datus...');
+
 
     useEffect(() => {
         fetch(`${API_URL}/api/listFolders`, {
@@ -29,6 +31,7 @@ export default function AllFoldersUser() {
             .then((data) => {
                 console.log(data);
                 setFolders(data.folders);
+                setSearchError("Nevar atrast šādu mapi.")
             })
             .catch((error) => {
                 console.error("Error fetching folder list:", error);
@@ -112,7 +115,7 @@ export default function AllFoldersUser() {
                         </div>
                     ))
                 ) : (
-                    <Text className="search-error">Nevar atrast šādu mapi.</Text>
+                    <Text className="search-error">{searchError}</Text>
                 )}
             </div>
             <Modal 

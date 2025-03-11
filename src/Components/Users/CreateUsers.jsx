@@ -194,7 +194,7 @@ export default function CreateUsers() {
             variant="filled"
             label="Pieejas līmenis"
             id="folderSelect"
-            data={['Skatītājs', 'Rediģētājs', 'Administrators']}
+            data={['Rediģētājs', 'Administrators']}
             placeholder="Izvēlieties pieejas līmeni"
             value={role}
             onChange={handleRoleChange}
