@@ -32,7 +32,7 @@ export default function FolderContentUser() {
             'Accept': 'application/json',
         },
         body: JSON.stringify({ folder_name: folderName }),
-        credentials:"include",  
+        credentials:"include",
       });
 
       if (!response.ok) {
