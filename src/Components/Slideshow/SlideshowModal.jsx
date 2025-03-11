@@ -64,7 +64,7 @@ export default function SlideshowModal({closeContinue}) {
 
     const fetchScreens = async () => {
         try {
-            const response = await fetch(`${API_URL}/getAllScreens`, {
+            const response = await fetch(`${API_URL}/api/getAllScreens`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
