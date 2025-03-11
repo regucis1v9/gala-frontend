@@ -32,7 +32,7 @@ export default function FolderContentUser() {
             'Accept': 'application/json',
         },
         body: JSON.stringify({ folder_name: folderName }),
-        credentials:"include",  
+        credentials:"include",
       });
 
       if (!response.ok) {
@@ -116,7 +116,7 @@ export default function FolderContentUser() {
 
       {selectedImage && !deleteImages && (
         <div className='modal' onClick={handleCloseModal}>
-          <img src={`http://localhost${selectedImage}`} alt="Full size" className='modal-image' />
+          <img src={`${selectedImage}`} alt="Full size" className='modal-image' />
         </div>
       )}
     </div>

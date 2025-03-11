@@ -177,7 +177,7 @@ export default function SlideshowCreation() {
                                                     border: button.id === selectedButtonId ? "3px solid #282262" : "none",
                                                 }}
                                             >
-                                            <img className="slide-preview-image" src={button.imageLink || ""} alt="" />
+                                            { button.imageLink && <img className="slide-preview-image" src={button.imageLink || ""} alt="" />}
                                         </Button>
                                         <Button
                                             variant="light"

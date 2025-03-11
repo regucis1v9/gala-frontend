@@ -60,14 +60,13 @@ export default function AllFoldersUser() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({ folder_name: selectedFolder.name, password }),
+            body: JSON.stringify({ folder_name: selectedFolder.name, password: password }),
             credentials: "include",
         })
             .then(response => response.json())
             .then(data => {
                 if (data.message === "Folder unlocked successfully") {
                     localStorage.setItem('session_token', data.session_token);
-                    
                     setModalOpen(false);
                     navigate(`/folderContent/${selectedFolder.name}`);
                 } else {
