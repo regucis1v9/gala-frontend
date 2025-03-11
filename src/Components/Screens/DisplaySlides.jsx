@@ -46,24 +46,26 @@ const DisplaySlides = () => {
         plugins={[autoplay.current]}
         loop // Allows the carousel to loop back to the beginning
         align="start" // Aligns items to the start of the container
-        height="100%" // Ensures the carousel takes the full height
+        height="100vh"
+        width="100vw"
         slideSize="100%" // Each slide takes full width
         withIndicators={false} // Show indicators for the slides
         classNames={{controls: style.hidden}}
       >
         {slides.map((slide) => (
-          <Carousel.Slide key={slide.id} style={{ position: 'relative' }}>
+          <Carousel.Slide key={slide.id} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img
               src={slide.imageLink}
               alt={`Slide ${slide.id}`}
               style={{
-                width: '100%',
+                width: 'auto',
                 height: '100%',
                 objectFit: 'cover', // Ensures the image covers the full height/width while maintaining aspect ratio
               }}
             />
+              { slide.description &&
             <span
-              className={slide.textPosition} // Dynamically assigning the class based on the API response
+              className={slide.textPosition} 
               style={{
                 color: slide.textColor,
                 backgroundColor: slide.bgColor,
@@ -73,6 +75,7 @@ const DisplaySlides = () => {
             >
               {slide.description}
             </span>
+              }
           </Carousel.Slide>
         ))}
       </Carousel>
