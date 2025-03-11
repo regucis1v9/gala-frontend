@@ -74,6 +74,7 @@ export default function Layout({ children }) {
       <AppShell.Header
           withBorder={false}
           p="sm"
+          hiddenFrom={"sm"}
       >
         <Burger
             opened={opened}
