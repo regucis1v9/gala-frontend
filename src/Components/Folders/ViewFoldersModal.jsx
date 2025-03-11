@@ -20,7 +20,7 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
     const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    fetch(`${API_URL}api/listFolders`, {
+    fetch(`${API_URL}/api/listFolders`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
     })
@@ -143,7 +143,7 @@ export default function ViewFoldersModal({ selectedButtonId, closeModal }) {
                                                         color={isDarkMode ? theme.colors.blue[8] : theme.colors.blue[6]}/>
                                   </div>
                                   <Text w={70} ta="center"
-                                        color={isDarkMode ? "white" : "black"}>{folder.name}</Text> {/* Use folder.name here */}
+                                        color={isDarkMode ? "white" : "black"}>{folder.name}</Text> 
                               </div>
                           </button>
                       ))
