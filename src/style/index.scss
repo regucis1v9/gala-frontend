@@ -561,6 +561,7 @@ p{
 .create-container{
   height:57vh;
   aspect-ratio: 5/6;
+  max-width: 320px;
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.1) 1px 0px 6px, rgba(0, 0, 0, 0.17) 0px 3px 6px;
   display: flex;
@@ -1039,5 +1040,13 @@ p{
     text-align: center;
     font-size: 24px;
     font-weight: 500;
+  }
+}
+@media screen and (max-width: 767px) {
+  .search-bar {
+    margin-top:35px;
+  }
+  .centerCalendar{
+    margin-top: 120px;
   }
 }

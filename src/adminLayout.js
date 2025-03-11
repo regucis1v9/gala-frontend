@@ -1,4 +1,4 @@
-import { AppShell } from '@mantine/core';
+import { AppShell, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NavLink } from '@mantine/core';
 import { Link } from 'react-router-dom';
@@ -71,7 +71,24 @@ export default function Layout({ children }) {
 
   return (
     <AppShell navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}>
+      <AppShell.Header
+          withBorder={false}
+          p="sm"
+      >
+        <Burger
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom="sm"
+            size="sm"
+        />
+      </AppShell.Header>
       <AppShell.Navbar p="md">
+        <Burger
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom="sm"
+            size="sm"
+        />
         <NavLink
           component={Link}
           to="/dashboard/"

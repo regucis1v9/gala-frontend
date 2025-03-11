@@ -1,5 +1,6 @@
 .root {
   display: flex;
+    overflow: scroll;
   background-image: linear-gradient(
     -60deg,
     var(--mantine-color-blue-6) 0%,
