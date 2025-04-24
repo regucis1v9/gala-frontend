@@ -24,7 +24,7 @@ export default function ViewFiles() {
   const [hasPassword, setHasPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [searchError, setSearchError] = useState('Atlasa datus...');
-
+    //esmu done
   useEffect(() => {
     fetch(`${API_URL}/api/listFolders`, {
       method: 'GET',
@@ -243,7 +243,7 @@ export default function ViewFiles() {
         title={`Dzēst "${folderToDelete}"?`}
         centered
       >
-        <Text>Mape tiks izdzēsta mūžīgi.</Text>
+        <Text>Mape un viss tās saturs pazudīs mūžīgi.</Text>
           <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
             <Button color="red" onClick={() => deleteFolder(folderToDelete)}>Jā, izdzēst</Button>
             <Button variant="outline" onClick={() => setShowDeleteFolderModal(false)}>Atcelt</Button>
