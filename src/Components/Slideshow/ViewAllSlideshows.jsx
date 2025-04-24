@@ -192,10 +192,11 @@ export default function ViewAllSlideshows() {
         </SimpleGrid>
       </Container>
       <Modal
+        fullScreen={true}  
         centered
         opened={opened}
         onClose={close}
-        title={`Slideshows for ${dayjs(selectedDate).format('MMMM D, YYYY')}`}
+        title={`Slaidi priekš ${dayjs(selectedDate).format('MMMM D, YYYY')}`}
       >
         <SingleDaySlidesModal slides={activeSlides} />
       </Modal>

@@ -10,6 +10,9 @@
 a, button{
   cursor: pointer;
 }
+html{
+  background-color:rgb(38,38,39);
+}
 main{
   width: 100vw;
   min-height: 100vh;
@@ -828,7 +831,6 @@ p{
     padding-block:10px;
     padding-inline:30px;
     height: min-content;
-    width: min-content;
     font-size: 32px;
 }
 
@@ -844,7 +846,6 @@ p{
     padding-inline:30px;
     height: min-content;
     text-align: center;
-    width: min-content;
     font-size: 32px;
 }
 
@@ -858,7 +859,6 @@ p{
     padding-inline:30px;
     height: min-content;
     padding-block: 10px;
-    width: min-content;
     font-size: 32px;
 }
 
@@ -875,12 +875,11 @@ p{
     padding-inline:30px;
     height: min-content;
     padding-block: 10px;
-    width: min-content;
     font-size: 32px;
 }
 
 .middle-center {
-  width: 50%;
+  max-width: 50%;
     top: 50%;
     left:50%;
     transform: translate(-50%, -50%);
@@ -891,7 +890,6 @@ p{
     padding-inline:30px;
     padding-block: 10px;
     text-align: center;
-    width: min-content;
     font-size: 32px;
 }
 
@@ -906,7 +904,6 @@ p{
     max-width: 30%;
     padding-inline:30px;
     height: min-content;
-    width: min-content;
     padding-block: 10px;
     font-size: 32px;
 }
@@ -919,7 +916,6 @@ p{
     max-width: 30%;
     padding-block:10px;
     height: min-content;
-    width: min-content;
     padding-inline:30px;
     font-size: 32px;
 }
@@ -936,7 +932,6 @@ p{
     padding-inline:30px;
     height: min-content;
     text-align: center;
-    width: min-content;
     font-size: 32px;
 }
 
@@ -950,7 +945,6 @@ p{
     padding-top:10px;
     padding-inline:30px;
     height: min-content;
-    width: min-content;
     font-size: 32px;
 }
 

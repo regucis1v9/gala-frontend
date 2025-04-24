@@ -8,22 +8,22 @@ import '@mantine/carousel/styles.css';
 export default function SingleDaySlidesModal({ slides }) {
   const autoplay = useRef(Autoplay({ delay: 5000 }));
 
-  const slidesToDisplay = slides.map((slide) => (
+    const slidesToDisplay = slides.map((slide) => (
     <Carousel.Slide key={slide.id}>
-      <Image src={slide.imageLink} height={220} style={{ objectFit: 'cover' }} />
-      <div
-        className={slide.textPosition} // Directly use the textPosition class name
+      <Image src={slide.imageLink} style={{ objectFit: 'contain', maxHeight: 'calc(100vh - 74px)' }} />
+        { slide.description && <div
+        className={slide.textPosition} 
         style={{
           color: slide.textColor,
           backgroundColor: slide.bgColor,
           padding:"10px",
-          position: 'absolute', // Positioning to allow placement on the image
-          textAlign: 'center', // Center text by default
-          width: 'calc(100% - 10px)', // Full width minus padding
+          position: 'absolute', 
+          textAlign: 'center', 
+          width: 'calc(100% - 10px)',
         }}
       >
-        <Text>{slide.description}</Text> {/* Display the description */}
-      </div>
+        <Text>{slide.description}</Text> 
+      </div>}
     </Carousel.Slide>
   ));
 

@@ -35,6 +35,7 @@ export default function SlideshowCreation() {
     const [bgValue, onBgChange] = useState('rgba(40,34,98,1)');
 
     const hasImageLink = buttonsData.some(button => button.imageLink.trim() !== "");
+    
 
     useEffect(() => {
         if (!Array.isArray(buttonsData) || buttonsData.length === 0) {
@@ -239,7 +240,11 @@ export default function SlideshowCreation() {
                                 classNames={{ root: description.wrapper, description: description.description, label: description.label }}
                                 variant="filled"
                                 label="Apraksts"
-                                description={selectedImage ? "Nav obligāts" : "Sākumā jāizvēlas fails"}
+                                description={
+                                    selectedImage
+                                        ? `Nav obligāts (${selectedImageDescription.length}/50)`
+                                        : 'Sākumā jāizvēlas fails'
+                                }
                                 placeholder="Apraksts par slaidā redzamo"
                                 autosize
                                 minRows={2}
@@ -247,6 +252,7 @@ export default function SlideshowCreation() {
                                 value={selectedImageDescription}
                                 onChange={handleDescriptionChange}
                                 disabled={!selectedImage}
+                                maxLength={50}
                             />
                             ) : (
                             <Tooltip label="Jāizvēlas fails pirms var pievienot aprakstu!">

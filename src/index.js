@@ -17,7 +17,6 @@ import DisplaySlides from './Components/Screens/DisplaySlides';
 import NotFound  from './Components/Mantine/NotFound';
 import FolderContentUser from './UserViews/FolderContentUser';
 import ViewFoldersUser from './UserViews/ViewFoldersUser';
-import ViewScreensUser from './UserViews/ViewScreensUser';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { Provider } from 'react-redux';

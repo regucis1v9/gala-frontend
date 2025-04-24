@@ -164,7 +164,7 @@ export default function UploadFiles() {
                 <Button
                     variant={"filled"}
                     color={"red"}
-                    style={{ position: 'absolute', top: '10px', left: '10px' }}
+                    style={{ position: 'absolute', top: '10px', left: '10px', zIndex: '10' }}
                     onClick={() => handleRemoveImage()}
                 >
                     Noņemt attēlu

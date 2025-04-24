@@ -6,7 +6,7 @@ export default function UserLayout({ children }) {
   return (
     <AppShell>
       <AppShell.Main>
-        {children} {/* Only render children if authenticated */}
+        {children} {}
       </AppShell.Main>
     </AppShell>
   );
