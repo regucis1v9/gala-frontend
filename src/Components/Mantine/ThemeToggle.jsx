@@ -7,9 +7,10 @@ export default function ThemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
   const token = localStorage.getItem('token');
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const handleLogout = () => {
-    fetch('http://localhost/api/logout', {
+    fetch(`${API_URL}/api/logout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${token}` },
     })
