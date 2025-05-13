@@ -16,7 +16,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false); 
   const navigate = useNavigate();
 
   const submitLoginForm = async () => {
@@ -40,8 +40,8 @@ export default function Login() {
     }
 
     if (isValid) {
-      setVisible(true); // Show loading overlay
-      setIsLoading(true); // Start loading
+      setVisible(true); 
+      setIsLoading(true); 
       try {
         const response = await fetch(`${API_URL}/api/login`, {
           method: "POST",
@@ -72,7 +72,7 @@ export default function Login() {
         console.log(`Error: ${error.message}`);
       } finally {
         setIsLoading(false);
-        setVisible(false); // Hide loading overlay
+        setVisible(false);
       }
     }
   };

@@ -23,8 +23,8 @@ const Clock = () => {
             position: 'absolute',
             top: '-58px',
             left: '2px',
-            backgroundColor: 'rgb(38,38,39)',
-            color: 'white',
+            backgroundColor: 'rgb(255,255,255)',
+            color: 'black',
             padding: '5px 10px',
             borderRadius: '5px',
             fontSize: '30px',
@@ -49,8 +49,8 @@ const DateDisplay = () => {
             position: 'absolute',
             top: '-58px',
             right: '2px',
-            backgroundColor: 'rgb(38,38,39)',
-            color: 'white',
+            backgroundColor: 'rgb(255,255,255)',
+            color: 'black',
             padding: '5px 10px',
             borderRadius: '5px',
             fontSize: '30px',
@@ -98,10 +98,10 @@ const DisplaySlides = () => {
     }
 
     return (
-        <div style ={{backgroundColor:"rgb(38,38,39)"}}>
+        <div style ={{backgroundColor:"rgb(255,255,255)"}}>
             <Clock />
             <DateDisplay />
-            <div style={{ height: height - 60, overflow: 'hidden', position: 'relative', marginTop: '60px', backgroundColor: 'rgb(38,38,39)' }}>
+            <div style={{ height: height - 60, overflow: 'hidden', position: 'relative', marginTop: '60px', backgroundColor: 'rgb(255,255,255)' }}>
                 <Carousel
                     plugins={[autoplay.current]}
                     loop
