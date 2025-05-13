@@ -11,7 +11,7 @@ export default function ViewFiles() {
     const API_URL = process.env.REACT_APP_API_URL;    
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
-  const isDarkMode = colorScheme === 'dark'; // Check if dark mode is active
+  const isDarkMode = colorScheme === 'dark';
   const [folders, setFolders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddFolderModal, setShowAddFolderModal] = useState(false);
@@ -24,7 +24,6 @@ export default function ViewFiles() {
   const [hasPassword, setHasPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [searchError, setSearchError] = useState('Atlasa datus...');
-    //esmu done
   useEffect(() => {
     fetch(`${API_URL}/api/listFolders`, {
       method: 'GET',
@@ -109,7 +108,7 @@ export default function ViewFiles() {
       const data = await response.json();
         setFolders((prevFolders) => [
             ...prevFolders,
-            { name: data.folder, has_password: hasPassword } // Ensure object structure
+            { name: data.folder, has_password: hasPassword }
         ]);
       setShowAddFolderModal(false);
       setNewFolderName('');
@@ -235,8 +234,7 @@ export default function ViewFiles() {
           <Button variant="outline" onClick={() => setShowAddFolderModal(false)}>Atcelt</Button>
         </div>
       </Modal>
-
-      {/* Delete Folder Modal */}
+        
       <Modal
         opened={showDeleteFolderModal}
         onClose={() => setShowDeleteFolderModal(false)}

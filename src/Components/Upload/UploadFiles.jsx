@@ -10,7 +10,7 @@ import dropdown from '../../style/ContainedInput.module.css';
 export default function UploadFiles() {
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState('');
-  const [files, setFiles] = useState([]); // State to hold uploaded files
+  const [files, setFiles] = useState([]); 
   const [previews, setPreviews] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);

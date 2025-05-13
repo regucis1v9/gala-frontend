@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateActiveComponent } from '../../actions/componentAction';
-
 export default function CreateFolders() {
   const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
   const dispatch = useDispatch();
   const token = localStorage.getItem('token')
     const API_URL = process.env.REACT_APP_API_URL;
-
-
     const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
@@ -18,7 +15,6 @@ export default function CreateFolders() {
   }, []);
 
   const handleSubmit = async () => {
-    // Input validation
     if (inputValue.length === 0) {
       setError("Nosaukums nevar būt tukšs");
       return;
